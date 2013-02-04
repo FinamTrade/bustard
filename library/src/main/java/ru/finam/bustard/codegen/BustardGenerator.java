@@ -7,6 +7,7 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class BustardGenerator {
     private Multimap<TypeElement, ExecutableElement> events = HashMultimap.create();
 
     public static TypeElement mirrorToElement(TypeMirror typeMirror) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (TypeElement) ((DeclaredType) typeMirror).asElement();
     }
 
     public void addListener(ExecutableElement listenerMethod) {
@@ -34,14 +35,22 @@ public class BustardGenerator {
     }
 
     public void generate(ProcessingEnvironment environment) throws IOException {
-        JavaFileObject fileObject = environment.getFiler().createClassFile("ru.finam.bustard.BustardImpl");
+        JavaFileObject fileObject = environment.getFiler().createSourceFile("ru.finam.bustard.BustardImpl");
 
         Writer writer = fileObject.openWriter();
+        try {
+            writeBustard(writer);
+        } finally {
+            writer.close();
+        }
+    }
+
+    private void writeBustard(Writer writer) throws IOException {
         writer.write("package ru.finam.bustard;\n\n");
 
         writer.write("import com.google.common.collect.Multimap;\n\n");
 
-        writer.write("class BustardImpl extends AbstractBustard {\n\n");
+        writer.write("public class BustardImpl extends AbstractBustard {\n\n");
 
         writer.write("    @Override\n");
         writer.write("    void initialize(Multimap<Class<?>, Class<?>> eventTypes) {\n");

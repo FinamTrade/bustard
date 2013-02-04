@@ -15,5 +15,17 @@
     <artifactId>bustard</artifactId>
     <packaging>jar</packaging>
     <name>Bustard</name>
-    
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
