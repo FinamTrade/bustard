@@ -1,4 +1,4 @@
-package ru.finam.bustard;
+package ru.finam.bustard.codegen;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
@@ -25,8 +25,6 @@ public class GwtAdapterGenerator {
     private final static String HANDLER_SUFFIX = "$GwtHandler";
     private final static String EVENT_ADAPTER_SUFFIX = "$GwtEventAdapter";
     private final static String HANDLER_ADAPTER_SUFFIX = "$GwtHandlerAdapter";
-
-
 
     private static String packageName(TypeElement eventType) {
         throw new UnsupportedOperationException();
