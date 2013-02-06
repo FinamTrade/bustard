@@ -18,7 +18,7 @@ import java.util.Set;
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ListenerProcessor extends AbstractProcessor {
 
-    private BustardGenerator generator = new BustardGenerator();
+    private BustardAptGenerator generator = new BustardAptGenerator();
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {

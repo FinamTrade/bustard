@@ -22,11 +22,6 @@
             <artifactId>bustard</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>ru.finam</groupId>
-            <artifactId>bustard-compiler</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 
     <build>
