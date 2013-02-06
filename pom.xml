@@ -9,6 +9,7 @@
 
     <modules>
         <module>library</module>
+        <module>compiler</module>
         <module>example</module>
     </modules>
 
@@ -39,7 +40,7 @@
 
         <dependency>
             <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
+            <artifactId>guava-gwt</artifactId>
             <version>13.0.1</version>
         </dependency>
 
@@ -59,8 +60,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.5</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.6</source>
+                    <target>1.6</target>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>

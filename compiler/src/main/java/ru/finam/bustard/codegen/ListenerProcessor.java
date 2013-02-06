@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.Set;
 
 @SupportedAnnotationTypes("net.engio.mbassy.listener.Listener")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ListenerProcessor extends AbstractProcessor {
 
     private BustardGenerator generator = new BustardGenerator();

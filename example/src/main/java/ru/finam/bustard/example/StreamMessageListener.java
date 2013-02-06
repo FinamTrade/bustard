@@ -4,10 +4,10 @@ import net.engio.mbassy.listener.Listener;
 
 import java.io.PrintStream;
 
-public class MessageListener {
+public class StreamMessageListener {
     private final PrintStream writer;
 
-    public MessageListener(PrintStream writer) {
+    public StreamMessageListener(PrintStream writer) {
         this.writer = writer;
     }
 

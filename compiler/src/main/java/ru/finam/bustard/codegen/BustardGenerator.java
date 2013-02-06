@@ -5,18 +5,17 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.JavaFileObject;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 public class BustardGenerator {
 
@@ -25,7 +24,7 @@ public class BustardGenerator {
             new Supplier<Collection<ExecutableElement>>() {
                 @Override
                 public Collection<ExecutableElement> get() {
-                    return new HashSet<>();
+                    return new HashSet<ExecutableElement>();
                 }
             });
 
@@ -46,10 +45,38 @@ public class BustardGenerator {
     }
 
     public void generate(ProcessingEnvironment environment) throws IOException {
-        JavaFileObject fileObject = environment.getFiler().createSourceFile("ru.finam.bustard.BustardImpl");
+        Set<Element> origin = new HashSet<Element>();
+        for (TypeElement eventType : events.keySet()) {
+            for (ExecutableElement listenerMethod : events.get(eventType)) {
+                TypeElement subscriberType = (TypeElement) listenerMethod.getEnclosingElement();
+                origin.add(subscriberType);
+            }
+            origin.add(eventType);
+        }
 
-        try (Writer writer = fileObject.openWriter()) {
-            writeBustard(writer);
+        FileObject fileObject = environment.getFiler().createResource(
+                StandardLocation.SOURCE_OUTPUT,
+                "ru.finam.bustard", "subscribers.txt",
+                origin.toArray(new Element[origin.size()]));
+
+        Writer writer = fileObject.openWriter();
+
+        try {
+            writeSubscribers(writer);
+        } finally {
+            writer.close();
+        }
+    }
+
+    private void writeSubscribers(Writer writer) throws IOException {
+        for (TypeElement eventType : events.keySet()) {
+            for (ExecutableElement listenerMethod : events.get(eventType)) {
+                TypeElement subscriberType = (TypeElement) listenerMethod.getEnclosingElement();
+                writer.write(String.format("%s %s %s\n",
+                        subscriberType.getQualifiedName().toString(),
+                        listenerMethod.getSimpleName().toString(),
+                        eventType.getQualifiedName().toString()));
+            }
         }
     }
 
@@ -61,12 +88,12 @@ public class BustardGenerator {
         writer.write("public class BustardImpl extends AbstractBustard {\n\n");
 
         writer.write("    @Override\n");
-        writer.write("    void initialize(Multimap<Class<?>, Class<?>> eventTypes) {\n");
+        writer.write("    void initialize(Multimap<String, String> eventTypes) {\n");
         for (TypeElement eventType : events.keySet()) {
             for (ExecutableElement listenerMethod : events.get(eventType)) {
                 TypeElement subscriberType = (TypeElement) listenerMethod.getEnclosingElement();
 
-                writer.write(String.format("        eventTypes.put(%s.class, %s.class);\n",
+                writer.write(String.format("        eventTypes.put(\"class %s\", \"class %s\");\n",
                         subscriberType.getQualifiedName().toString(),
                         eventType.getQualifiedName().toString()));
             }

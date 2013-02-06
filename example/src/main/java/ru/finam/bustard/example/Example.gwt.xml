@@ -1,0 +1,8 @@
+<module rename-to="example">
+  <inherits name="com.google.gwt.user.User" />
+  <inherits name="ru.finam.bustard.Bustard" />
+
+  <source path="" />
+
+  <entry-point class="ru.finam.bustard.example.ExampleGwtApp" />
+</module>

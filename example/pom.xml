@@ -13,13 +13,18 @@
 
     <groupId>ru.finam</groupId>
     <artifactId>bustard-example</artifactId>
-    <packaging>jar</packaging>
-    <name>Bustard (Example)</name>
+    <packaging>war</packaging>
+    <name>Bustard Example</name>
 
     <dependencies>
         <dependency>
             <groupId>ru.finam</groupId>
             <artifactId>bustard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ru.finam</groupId>
+            <artifactId>bustard-compiler</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
@@ -33,6 +38,20 @@
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <version>${gwt.version}</version>
+                <executions>
+                    <execution>
+                        <id>gwt-compile</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
