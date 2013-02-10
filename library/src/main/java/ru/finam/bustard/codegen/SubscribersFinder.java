@@ -1,13 +1,14 @@
 package ru.finam.bustard.codegen;
 
 
+import org.apache.commons.collections.EnumerationUtils;
 import ru.finam.bustard.BustardImpl;
 
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -19,7 +20,9 @@ public class SubscribersFinder {
 
     public static Iterable<SubscriberInfo> retrieveSubscribersInfo() throws IOException {
         ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();
-        final Enumeration<URL> urls = bustardClassLoader.getResources("ru/finam/bustard/subscribers.bustard");
+        @SuppressWarnings("unchecked")
+        final List<URL> urls = EnumerationUtils.toList(
+                bustardClassLoader.getResources("ru/finam/bustard/subscribers.bustard"));
         return new Iterable<SubscriberInfo>() {
             @Override
             public Iterator<SubscriberInfo> iterator() {
@@ -43,13 +46,13 @@ public class SubscribersFinder {
 
     public static class LineIterator implements Iterator<SubscriberInfo> {
 
-        private Enumeration<URL> urls;
+        private Iterator<URL> urls;
 
         private StringTokenizer tokenizer = null;
         private String nextLine = null;
 
-        public LineIterator(Enumeration<URL> urls) {
-            this.urls = urls;
+        public LineIterator(List<URL> urls) {
+            this.urls = urls.iterator();
         }
 
         @Override
@@ -57,11 +60,11 @@ public class SubscribersFinder {
             try {
                 while (nextLine == null || !LINE_PATTERN.matcher(nextLine).matches()) {
                     while (tokenizer == null || !tokenizer.hasMoreTokens()) {
-                        if (!urls.hasMoreElements()) {
+                        if (!urls.hasNext()) {
                             return false;
                         }
 
-                        tokenizer = new StringTokenizer(readEntireFile(urls.nextElement()), "\n\r");
+                        tokenizer = new StringTokenizer(readEntireFile(urls.next()), "\n\r");
                     }
                     nextLine = tokenizer.nextToken();
                 }

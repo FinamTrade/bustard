@@ -68,7 +68,7 @@ public class BustardAptGenerator {
         }
 
         FileObject subscribersFileObject = environment.getFiler().createResource(
-                StandardLocation.SOURCE_OUTPUT,
+                StandardLocation.CLASS_OUTPUT,
                 "ru.finam.bustard", "subscribers.bustard",
                 origin.toArray(new Element[origin.size()]));
 
