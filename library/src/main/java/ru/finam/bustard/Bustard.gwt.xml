@@ -1,8 +1,12 @@
 <module rename-to="bustard">
-    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="com.google.gwt.core.Core" />
     <inherits name="com.google.common.collect.Collect"/>
 
     <source path="">
         <exclude name="**/codegen/**" />
     </source>
+
+    <generate-with class="ru.finam.bustard.codegen.BustardGwtGenerator">
+        <when-type-assignable class="ru.finam.bustard.Bustard" />
+    </generate-with>
 </module>

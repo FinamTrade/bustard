@@ -47,7 +47,7 @@ public class BustardAptGenerator {
 
     public void generate(ProcessingEnvironment environment) throws IOException {
         Set<Element> origin = new HashSet<Element>();
-        BustardEmitter bustardEmitter = new BustardEmitter();
+        BustardEmitter bustardEmitter = new BustardEmitter("BustardImpl");
         StringBuilder subscribersInfo = new StringBuilder();
 
         for (TypeElement eventType : events.keySet()) {
@@ -55,7 +55,7 @@ public class BustardAptGenerator {
                 TypeElement subscriberType = (TypeElement) listenerMethod.getEnclosingElement();
                 origin.add(subscriberType);
 
-                String subscriberName = eventType.getQualifiedName().toString();
+                String subscriberName = subscriberType.getQualifiedName().toString();
                 String eventName = eventType.getQualifiedName().toString();
                 String methodName = listenerMethod.getSimpleName().toString();
 

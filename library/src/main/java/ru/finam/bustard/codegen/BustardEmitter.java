@@ -8,7 +8,13 @@ import java.io.Writer;
 
 public class BustardEmitter {
 
+    private final String implName;
+
     private Multimap<String, String[]> subscribers = HashMultimap.create();
+
+    public BustardEmitter(String implSimpleName) {
+        this.implName = implSimpleName;
+    }
 
     public void addSubscriber(String eventTypeName, String subscriberTypeName, String methodName) {
         subscribers.put(eventTypeName, new String[] { subscriberTypeName, methodName });
@@ -19,7 +25,7 @@ public class BustardEmitter {
 
         writer.write("import com.google.common.collect.Multimap;\n\n");
 
-        writer.write("public class BustardImpl extends AbstractBustard {\n\n");
+        writer.write(String.format("public class %s extends AbstractBustard {\n\n", implName));
 
         writer.write("    @Override\n");
         writer.write("    void initialize(Multimap<String, String> eventTypes) {\n");

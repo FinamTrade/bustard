@@ -1,17 +1,16 @@
 package ru.finam.bustard.example;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Document;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import ru.finam.bustard.Bustard;
-import ru.finam.bustard.BustardImpl;
 
 public class ExampleGwtApp implements EntryPoint {
 
-    final Bustard bustard = new BustardImpl();
+    final Bustard bustard = GWT.create(Bustard.class);
 
     @Override
     public void onModuleLoad() {
