@@ -18,7 +18,11 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
-public class BustardAptGenerator {
+public class BustardGenerator {
+
+    public static final String PACKAGE_NAME = "ru.finam.bustard";
+    public static final String IMPL_NAME = "BustardImpl";
+    public static final String SUBSCRIBERS_FILE_NAME = "subscribers.bustard";
 
     private Multimap<TypeElement, ExecutableElement> events = Multimaps.newMultimap(
             new HashMap<TypeElement, Collection<ExecutableElement>>(),
@@ -47,7 +51,7 @@ public class BustardAptGenerator {
 
     public void generate(ProcessingEnvironment environment) throws IOException {
         Set<Element> origin = new HashSet<Element>();
-        BustardEmitter bustardEmitter = new BustardEmitter("BustardImpl");
+        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME);
         StringBuilder subscribersInfo = new StringBuilder();
 
         for (TypeElement eventType : events.keySet()) {
@@ -69,7 +73,7 @@ public class BustardAptGenerator {
 
         FileObject subscribersFileObject = environment.getFiler().createResource(
                 StandardLocation.CLASS_OUTPUT,
-                "ru.finam.bustard", "subscribers.bustard",
+                PACKAGE_NAME, SUBSCRIBERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
         Writer subscribersWriter = subscribersFileObject.openWriter();
@@ -81,7 +85,7 @@ public class BustardAptGenerator {
         }
 
         JavaFileObject bustardFileObject = environment.getFiler().createSourceFile(
-                "ru.finam.bustard.BustardImpl",
+                PACKAGE_NAME + "." + IMPL_NAME,
                 origin.toArray(new Element[origin.size()]));
 
         Writer bustardFileWriter = bustardFileObject.openWriter();

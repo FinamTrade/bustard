@@ -18,11 +18,14 @@ public class SubscribersFinder {
             Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*$");
 
+    public static final String FILE_PATH = BustardGenerator.PACKAGE_NAME.replace('.', '/') +
+            "/" + BustardGenerator.SUBSCRIBERS_FILE_NAME;
+
     public static Iterable<SubscriberInfo> retrieveSubscribersInfo() throws IOException {
         ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();
         @SuppressWarnings("unchecked")
         final List<URL> urls = EnumerationUtils.toList(
-                bustardClassLoader.getResources("ru/finam/bustard/subscribers.bustard"));
+                bustardClassLoader.getResources(FILE_PATH));
         return new Iterable<SubscriberInfo>() {
             @Override
             public Iterator<SubscriberInfo> iterator() {

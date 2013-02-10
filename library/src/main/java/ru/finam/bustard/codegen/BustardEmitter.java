@@ -9,10 +9,12 @@ import java.io.Writer;
 public class BustardEmitter {
 
     private final String implName;
+    private final String pkgName;
 
     private Multimap<String, String[]> subscribers = HashMultimap.create();
 
-    public BustardEmitter(String implSimpleName) {
+    public BustardEmitter(String pkgName, String implSimpleName) {
+        this.pkgName = pkgName;
         this.implName = implSimpleName;
     }
 
@@ -21,7 +23,7 @@ public class BustardEmitter {
     }
 
     public void emit(Writer writer) throws IOException {
-        writer.write("package ru.finam.bustard;\n\n");
+        writer.write(String.format("package %s;\n\n", pkgName));
 
         writer.write("import com.google.common.collect.Multimap;\n\n");
 

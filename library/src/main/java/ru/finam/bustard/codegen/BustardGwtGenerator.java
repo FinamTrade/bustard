@@ -8,16 +8,16 @@ import java.io.PrintWriter;
 public class BustardGwtGenerator extends IncrementalGenerator {
 
     private static final String PACKAGE_NAME = "ru.finam.bustard";
-    private static final String CLASS_NAME = "BustardGwtImpl";
+    private static final String IMPL_NAME = "BustardGwtImpl";
 
     @Override
     public RebindResult generateIncrementally(TreeLogger logger,
                                               GeneratorContext context,
                                               String typeName) throws UnableToCompleteException {
-        PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, CLASS_NAME);
+        PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
         if (writer != null) {
             try {
-                BustardEmitter bustardEmitter = new BustardEmitter(CLASS_NAME);
+                BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME);
                 for(SubscriberInfo info : SubscribersFinder.retrieveSubscribersInfo()) {
                     bustardEmitter.addSubscriber(
                             info.getEventName(),
@@ -31,7 +31,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
             }
             context.commit(logger, writer);
         }
-        return new RebindResult(RebindMode.USE_ALL_NEW_WITH_NO_CACHING, PACKAGE_NAME + "." + CLASS_NAME);
+        return new RebindResult(RebindMode.USE_ALL_NEW_WITH_NO_CACHING, PACKAGE_NAME + "." + IMPL_NAME);
     }
 
     @Override
