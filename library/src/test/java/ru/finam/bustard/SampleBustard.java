@@ -9,7 +9,7 @@ import com.google.common.collect.Multimap;
 public class SampleBustard extends AbstractBustard {
 
     @Override
-    void initialize(Multimap<Class, Class> eventTypes) {
+    void initialize(Multimap<Class<?>, Class<?>> eventTypes) {
         eventTypes.put(SampleListener.class, String.class);
     }
 
@@ -20,10 +20,5 @@ public class SampleBustard extends AbstractBustard {
                 ((SampleListener) listener).listen((String) event);
             }
         }
-    }
-
-    @Override
-    protected void print(String message) {
-        System.out.println(message);
     }
 }

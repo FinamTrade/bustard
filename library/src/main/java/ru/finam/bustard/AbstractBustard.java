@@ -11,7 +11,7 @@ import java.util.HashSet;
 
 public abstract class AbstractBustard implements Bustard {
 
-    private final Multimap<Class, Class> eventTypes = HashMultimap.create();
+    private final Multimap<Class<?>, Class<?>> eventTypes = HashMultimap.create();
 
     private final Multimap<Class, Object> listeners = Multimaps.newMultimap(
             new HashMap<Class, Collection<Object>>(),
@@ -22,7 +22,7 @@ public abstract class AbstractBustard implements Bustard {
                 }
             });
 
-    abstract void initialize(Multimap<Class, Class> eventTypes);
+    abstract void initialize(Multimap<Class<?>, Class<?>> eventTypes);
 
     abstract void post(Object listener, Object event) throws Throwable;
 
@@ -33,9 +33,7 @@ public abstract class AbstractBustard implements Bustard {
 
     @Override
     public void subscribe(Object listener) {
-        print("subscribe: " + listener.getClass());
         for (Class eventType : eventTypes.get(listener.getClass())) {
-            print(eventType.toString());
             listeners.put(eventType, listener);
         }
     }
@@ -47,21 +45,10 @@ public abstract class AbstractBustard implements Bustard {
         }
     }
 
-    protected void print(String message) {
-        log(message);
-    }
-
-    private native void log(String message)/*-{
-        console.log(message);
-    }-*/;
-
     @Override
     public void post(Object event) {
-        print("Calling post(" + event.getClass() + ")");
-        print(listeners.toString());
         for (Object listener : listeners.get(event.getClass())) {
             try {
-                print("Calling post(Object, Object)");
                 post(listener, event);
             } catch (Throwable throwable) {
                 if (!(event instanceof Throwable)) {

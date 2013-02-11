@@ -7,7 +7,7 @@ import com.google.common.collect.Multimap;
  */
 public class BustardImpl extends AbstractBustard {
     @Override
-    void initialize(Multimap<Class, Class> eventTypes) {
+    void initialize(Multimap<Class<?>, Class<?>> eventTypes) {
         throw new UnsupportedOperationException("Stub bustard using.");
     }
 
