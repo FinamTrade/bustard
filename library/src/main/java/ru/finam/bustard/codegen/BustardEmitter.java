@@ -30,12 +30,12 @@ public class BustardEmitter {
         writer.write(String.format("public class %s extends AbstractBustard {\n\n", implName));
 
         writer.write("    @Override\n");
-        writer.write("    void initialize(Multimap<String, String> eventTypes) {\n");
+        writer.write("    void initialize(Multimap<Class, Class> eventTypes) {\n");
         for (String eventTypeName : subscribers.keySet()) {
             for (String[] data : subscribers.get(eventTypeName)) {
                 String subscriberTypeName = data[0];
 
-                writer.write(String.format("        eventTypes.put(\"class %s\", \"class %s\");\n",
+                writer.write(String.format("        eventTypes.put(%s.class, %s.class);\n",
                         subscriberTypeName,
                         eventTypeName));
             }

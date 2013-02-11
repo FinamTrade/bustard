@@ -11,10 +11,10 @@ import java.util.HashSet;
 
 public abstract class AbstractBustard implements Bustard {
 
-    private final Multimap<String, String> eventTypes = HashMultimap.create();
+    private final Multimap<Class, Class> eventTypes = HashMultimap.create();
 
-    private final Multimap<String, Object> listeners = Multimaps.newMultimap(
-            new HashMap<String, Collection<Object>>(),
+    private final Multimap<Class, Object> listeners = Multimaps.newMultimap(
+            new HashMap<Class, Collection<Object>>(),
             new Supplier<Collection<Object>>() {
                 @Override
                 public Collection<Object> get() {
@@ -22,7 +22,7 @@ public abstract class AbstractBustard implements Bustard {
                 }
             });
 
-    abstract void initialize(Multimap<String, String> eventTypes);
+    abstract void initialize(Multimap<Class, Class> eventTypes);
 
     abstract void post(Object listener, Object event) throws Throwable;
 
@@ -34,15 +34,15 @@ public abstract class AbstractBustard implements Bustard {
     @Override
     public void subscribe(Object listener) {
         print("subscribe: " + listener.getClass());
-        for (String eventType : eventTypes.get(listener.getClass().toString())) {
-            print(eventType);
+        for (Class eventType : eventTypes.get(listener.getClass())) {
+            print(eventType.toString());
             listeners.put(eventType, listener);
         }
     }
 
     @Override
     public void unsubscribe(Object listener) {
-        for (String eventType : eventTypes.get(listener.getClass().toString())) {
+        for (Class eventType : eventTypes.get(listener.getClass())) {
             listeners.remove(eventType, listener);
         }
     }
@@ -59,7 +59,7 @@ public abstract class AbstractBustard implements Bustard {
     public void post(Object event) {
         print("Calling post(" + event.getClass() + ")");
         print(listeners.toString());
-        for (Object listener : listeners.get(event.getClass().toString())) {
+        for (Object listener : listeners.get(event.getClass())) {
             try {
                 print("Calling post(Object, Object)");
                 post(listener, event);
