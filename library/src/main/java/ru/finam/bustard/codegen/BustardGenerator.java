@@ -3,6 +3,7 @@ package ru.finam.bustard.codegen;
 import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import ru.finam.bustard.AbstractBustard;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -51,7 +52,7 @@ public class BustardGenerator {
 
     public void generate(ProcessingEnvironment environment) throws IOException {
         Set<Element> origin = new HashSet<Element>();
-        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME);
+        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
         for (TypeElement eventType : events.keySet()) {

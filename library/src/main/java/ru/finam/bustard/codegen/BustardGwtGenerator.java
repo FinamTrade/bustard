@@ -1,6 +1,7 @@
 package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
+import ru.finam.bustard.gwt.AbstractGwtBustard;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -17,7 +18,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
         PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
         if (writer != null) {
             try {
-                BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME);
+                BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
                 for(SubscriberInfo info : SubscribersFinder.retrieveSubscribersInfo()) {
                     bustardEmitter.addSubscriber(
                             info.getEventName(),
