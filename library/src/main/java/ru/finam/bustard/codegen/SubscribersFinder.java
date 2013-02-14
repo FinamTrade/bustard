@@ -16,7 +16,8 @@ public class SubscribersFinder {
 
     public static final Pattern LINE_PATTERN =
             Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
-                    "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*$");
+                    "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
+                    "([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*$");
 
     public static final String FILE_PATH = BustardGenerator.PACKAGE_NAME.replace('.', '/') +
             "/" + BustardGenerator.SUBSCRIBERS_FILE_NAME;
@@ -85,7 +86,7 @@ public class SubscribersFinder {
             }
             String[] tokens = nextLine.split(" ");
             nextLine = null;
-            return new SubscriberInfo(tokens[0], tokens[1], tokens[2]);
+            return new SubscriberInfo(tokens[0], tokens[1], tokens[2], tokens[3]);
         }
 
         @Override

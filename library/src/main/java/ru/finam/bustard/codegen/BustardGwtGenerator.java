@@ -1,10 +1,14 @@
 package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
+import ru.finam.bustard.BustardImpl;
+import ru.finam.bustard.ExecuteQualifier;
+import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 
 public class BustardGwtGenerator extends IncrementalGenerator {
 
@@ -23,10 +27,18 @@ public class BustardGwtGenerator extends IncrementalGenerator {
                     bustardEmitter.addSubscriber(
                             info.getEventName(),
                             info.getSubscriberName(),
-                            info.getMethodName());
+                            info.getMethodName(),
+                            info.getExecuteQualifierName());
+
+                    String executeQualifierName = info.getExecuteQualifierName();
+                    if (!"null".equals(executeQualifierName)) {
+                        Class<?> qualifierType = BustardImpl.class.getClassLoader().loadClass(executeQualifierName);
+                        Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
+                        bustardEmitter.addExecutor(executeQualifierName, executorType.getCanonicalName());
+                    }
                 }
                 bustardEmitter.emit(writer);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.log(TreeLogger.Type.ERROR, e.toString());
                 throw new UnableToCompleteException();
             }

@@ -7,6 +7,7 @@ public class SampleListener {
     public SampleListener() {
     }
 
+    @SomeQualifier
     public void listen(String str) {
         lastMessage = str;
     }

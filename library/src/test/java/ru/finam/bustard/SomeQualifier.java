@@ -5,8 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.ANNOTATION_TYPE)
+@ExecuteQualifier(CounterExecutor.class)
+@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExecuteQualifier {
-    Class<? extends Executor> value();
+public @interface SomeQualifier {
 }

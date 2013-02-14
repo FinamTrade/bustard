@@ -8,9 +8,6 @@ import java.util.List;
  * Stub
  */
 public class BustardImpl extends AbstractBustard {
-    public BustardImpl(List<Executor> executors) {
-        super(executors);
-    }
 
     @Override
     protected void initialize(Config config) {

@@ -25,4 +25,17 @@ public class AbstractBustardTest {
         bustard.post("Bye");
         Assert.assertEquals("Hi", listener.getLastMessage());
     }
+
+    @Test
+    public void attachExecutorToBustard() {
+        Bustard bustard = new SampleBustardWithExecutor();
+        CounterExecutor counterExecutor = new CounterExecutor();
+        bustard.attachExecutors(counterExecutor);
+        bustard.initialize();
+        SampleListener listener = new SampleListener();
+        bustard.subscribe(listener);
+        bustard.post("Hello, World!");
+        Assert.assertEquals("Hello, World!", listener.getLastMessage());
+        Assert.assertEquals(1, counterExecutor.getCount());
+    }
 }

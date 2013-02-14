@@ -1,13 +1,10 @@
 package ru.finam.bustard;
 
-/**
- * How it will be generated
- */
-public class SampleBustard extends AbstractBustard {
-
+public class SampleBustardWithExecutor extends AbstractBustard {
     @Override
     protected void initialize(Config config) {
-        config.put(SampleListener.class, String.class);
+        config.addExecuteQualifier("SomeQualifier", CounterExecutor.class);
+        config.put(SampleListener.class, String.class, "SomeQualifier");
     }
 
     @Override

@@ -9,14 +9,17 @@ public class Config {
     private final Multimap<Class<?>, Class<?>> eventTypes = HashMultimap.create();
     private final Map<SubscriberKey, Executor> executors = new HashMap<SubscriberKey, Executor>();
     private final Map<String, Executor> executorsByQualifier = new HashMap<String, Executor>();
-    private final List<Executor> executorList;
+    private final List<Executor> executorList = new ArrayList<Executor>();
 
-    public Config(List<Executor> executorList) {
-        this.executorList = executorList;
+    public Config() {
     }
 
     public void put(Class<?> subscriberType, Class<?> eventType) {
         put(subscriberType, eventType, null);
+    }
+
+    public void attachExecutors(Executor... executors) {
+        Collections.addAll(executorList, executors);
     }
 
     public void addExecuteQualifier(String qualifierName, Class<? extends Executor> executorType) {
@@ -31,7 +34,8 @@ public class Config {
             }
         }
         if (!added) {
-            throw new RuntimeException("No executors for: " + qualifierName);
+            throw new IllegalStateException("No executors for: " + qualifierName +
+                    ". Attach executor before initialize.");
         }
     }
 
@@ -82,7 +86,7 @@ public class Config {
 
             SubscriberKey that = (SubscriberKey) o;
 
-            return event.equals(that.event) && subscriber.equals(that.subscriber);
+            return event == that.event && subscriber == that.subscriber;
         }
 
         @Override

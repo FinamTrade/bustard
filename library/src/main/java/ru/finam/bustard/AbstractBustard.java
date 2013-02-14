@@ -20,21 +20,20 @@ public abstract class AbstractBustard implements Bustard {
                 }
             });
 
-
     public AbstractBustard() {
-        this(new ArrayList<Executor>());
+        this(new DirectExecutor());
     }
 
-    public AbstractBustard(List<Executor> executors) {
-        this(new DirectExecutor(), executors);
-    }
-
-    public AbstractBustard(Executor defaultExecutor, List<Executor> executors) {
+    public AbstractBustard(Executor defaultExecutor) {
         if (defaultExecutor == null) {
             throw new NullPointerException("defaultExecutor");
         }
         this.defaultExecutor = defaultExecutor;
-        this.config = new Config(executors);
+        this.config = new Config();
+    }
+
+    public void attachExecutors(Executor... executors) {
+        config.attachExecutors(executors);
     }
 
     protected abstract void initialize(Config config);
