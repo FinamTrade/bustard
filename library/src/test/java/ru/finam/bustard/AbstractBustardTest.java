@@ -38,4 +38,10 @@ public class AbstractBustardTest {
         Assert.assertEquals("Hello, World!", listener.getLastMessage());
         Assert.assertEquals(1, counterExecutor.getCount());
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void noExecutor() {
+        Bustard bustard = new SampleBustardWithExecutor();
+        bustard.initialize();
+    }
 }
