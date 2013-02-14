@@ -115,4 +115,10 @@ public class BustardEmitter {
 
         writer.write("}");
     }
+
+    private class SubscribeMethod {
+        private String subscriberTypeName;
+        private String methodName;
+        private String qualifier;
+    }
 }
