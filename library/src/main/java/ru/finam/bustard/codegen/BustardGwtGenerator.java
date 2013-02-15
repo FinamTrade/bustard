@@ -6,9 +6,7 @@ import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;
 
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
 
 public class BustardGwtGenerator extends IncrementalGenerator {
 
@@ -23,18 +21,12 @@ public class BustardGwtGenerator extends IncrementalGenerator {
         if (writer != null) {
             try {
                 BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
-                for(SubscriberInfo info : SubscribersFinder.retrieveSubscribersInfo()) {
-                    bustardEmitter.addSubscriber(
-                            info.getEventName(),
-                            info.getSubscriberName(),
-                            info.getMethodName(),
-                            info.getExecuteQualifierName());
+                for(MethodDescription description : SubscribersFinder.retrieveSubscribersInfo()) {
+                    bustardEmitter.addSubscriber(description);
 
-                    String executeQualifierName = info.getExecuteQualifierName();
-                    if (!"null".equals(executeQualifierName)) {
-                        Class<?> qualifierType = BustardImpl.class.getClassLoader().loadClass(executeQualifierName);
-                        Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
-                        bustardEmitter.addExecutor(executeQualifierName, executorType.getCanonicalName());
+                    String executeQualifierName = description.getExecuteQualifierName();
+                    if (executeQualifierName != null) {
+                        bustardEmitter.addExecutor(executeQualifierName, extractExecutorName(executeQualifierName));
                     }
                 }
                 bustardEmitter.emit(writer);
@@ -45,6 +37,12 @@ public class BustardGwtGenerator extends IncrementalGenerator {
             context.commit(logger, writer);
         }
         return new RebindResult(RebindMode.USE_ALL_NEW_WITH_NO_CACHING, PACKAGE_NAME + "." + IMPL_NAME);
+    }
+
+    private String extractExecutorName(String executeQualifierName) throws ClassNotFoundException {
+        Class<?> qualifierType = BustardImpl.class.getClassLoader().loadClass(executeQualifierName);
+        Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
+        return executorType.getCanonicalName();
     }
 
     @Override

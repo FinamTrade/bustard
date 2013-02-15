@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
@@ -22,14 +23,14 @@ public class SubscribersFinder {
     public static final String FILE_PATH = BustardGenerator.PACKAGE_NAME.replace('.', '/') +
             "/" + BustardGenerator.SUBSCRIBERS_FILE_NAME;
 
-    public static Iterable<SubscriberInfo> retrieveSubscribersInfo() throws IOException {
+    public static Iterable<MethodDescription> retrieveSubscribersInfo() throws IOException {
         ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();
         @SuppressWarnings("unchecked")
         final List<URL> urls = EnumerationUtils.toList(
                 bustardClassLoader.getResources(FILE_PATH));
-        return new Iterable<SubscriberInfo>() {
+        return new Iterable<MethodDescription>() {
             @Override
-            public Iterator<SubscriberInfo> iterator() {
+            public Iterator<MethodDescription> iterator() {
                 return new LineIterator(urls);
             }
         };
@@ -48,7 +49,7 @@ public class SubscribersFinder {
         return contents.toString();
     }
 
-    public static class LineIterator implements Iterator<SubscriberInfo> {
+    public static class LineIterator implements Iterator<MethodDescription> {
 
         private Iterator<URL> urls;
 
@@ -80,13 +81,15 @@ public class SubscribersFinder {
         }
 
         @Override
-        public SubscriberInfo next() {
+        public MethodDescription next() {
             if (!hasNext()) {
-                return null;
+                throw new NoSuchElementException();
             }
             String[] tokens = nextLine.split(" ");
             nextLine = null;
-            return new SubscriberInfo(tokens[0], tokens[1], tokens[2], tokens[3]);
+
+            String executeQualifier = tokens[3].equals("null") ? null : tokens[3];
+            return new MethodDescription(tokens[0], tokens[1], tokens[2], executeQualifier);
         }
 
         @Override

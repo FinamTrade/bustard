@@ -87,16 +87,12 @@ public class BustardGenerator {
         BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
-        for (SubscriberInfo info : SubscribersFinder.retrieveSubscribersInfo()) {
-            bustardEmitter.addSubscriber(
-                    info.getEventName(),
-                    info.getSubscriberName(),
-                    info.getMethodName(),
-                    info.getExecuteQualifierName());
+        for (MethodDescription description : SubscribersFinder.retrieveSubscribersInfo()) {
+            bustardEmitter.addSubscriber(description);
 
-            if (!"null".equals(info.getExecuteQualifierName())) {
+            if (!"null".equals(description.getExecuteQualifierName())) {
                 TypeElement qualifierType = environment.getElementUtils()
-                        .getTypeElement(info.getExecuteQualifierName());
+                        .getTypeElement(description.getExecuteQualifierName());
 
                 String executorTypeName = extractExecutorType(qualifierType).toString();
                 bustardEmitter.addExecutor(qualifierType.getQualifiedName().toString(), executorTypeName);
@@ -122,11 +118,8 @@ public class BustardGenerator {
                     bustardEmitter.addExecutor(executeQualifierName, executorTypeName);
                 }
 
-                bustardEmitter.addSubscriber(
-                        eventName,
-                        subscriberName,
-                        methodName,
-                        executeQualifierName);
+                bustardEmitter.addSubscriber(new MethodDescription(
+                        subscriberName, methodName, eventName, executeQualifierName));
 
                 subscribersInfo.append(String.format("%s %s %s %s\n",
                         subscriberName, methodName, eventName, executeQualifierName));

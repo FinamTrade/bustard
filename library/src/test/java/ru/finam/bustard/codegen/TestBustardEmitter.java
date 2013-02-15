@@ -18,8 +18,8 @@ public class TestBustardEmitter {
                 BustardGenerator.IMPL_NAME,
                 AbstractBustard.class);
 
-        emitter.addSubscriber("SomeEvent", "Subscriber", "listen", null);
-        emitter.addSubscriber("SomeEvent", "Subscriber", "listen", null);
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
 
         emitter.emit(writer);
 

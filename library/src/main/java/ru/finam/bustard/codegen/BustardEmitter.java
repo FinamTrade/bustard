@@ -17,7 +17,7 @@ public class BustardEmitter {
     private final Class<? extends Bustard> supertype;
     private static final String INDENT = "    ";
 
-    private Multimap<String, String[]> subscribers = HashMultimap.create();
+    private Multimap<String, MethodDescription> subscribers = HashMultimap.create();
     private Map<String, String> executors = new HashMap<String, String>();
 
     public BustardEmitter(String pkgName, String implSimpleName,
@@ -31,11 +31,8 @@ public class BustardEmitter {
         executors.put(executeQualifier, executorTypeName);
     }
 
-    public void addSubscriber(String eventTypeName,
-                              String subscriberTypeName,
-                              String methodName,
-                              String executorQualifier) {
-        subscribers.put(eventTypeName, new String[] { subscriberTypeName, methodName, executorQualifier });
+    public void addSubscriber(MethodDescription description) {
+        subscribers.put(description.getEventName(), description);
     }
 
     private void emitIndent(Writer writer, int level) throws IOException {
@@ -61,12 +58,12 @@ public class BustardEmitter {
                     executors.get(executeQualifier)));
         }
         for (String eventTypeName : subscribers.keySet()) {
-            for (String[] data : subscribers.get(eventTypeName)) {
-                String subscriberTypeName = data[0];
-                String executorQualifier = data[2];
+            for (MethodDescription description : subscribers.get(eventTypeName)) {
+                String subscriberTypeName = description.getSubscriberName();
+                String executeQualifier = description.getExecuteQualifierName();
 
                 emitIndent(writer, 2);
-                if (executorQualifier == null) {
+                if (executeQualifier == null) {
                     writer.write(String.format("config.put(%s.class, %s.class);\n",
                             subscriberTypeName,
                             eventTypeName));
@@ -74,7 +71,7 @@ public class BustardEmitter {
                     writer.write(String.format("config.put(%s.class, %s.class, \"%s\");\n",
                             subscriberTypeName,
                             eventTypeName,
-                            executorQualifier));
+                            executeQualifier));
                 }
             }
         }
@@ -90,9 +87,9 @@ public class BustardEmitter {
             writer.write(String.format("if (event instanceof %s) {\n",
                     eventTypeName));
 
-            for (String[] data : subscribers.get(eventTypeName)) {
-                String subscriberTypeName = data[0];
-                String methodName = data[1];
+            for (MethodDescription description : subscribers.get(eventTypeName)) {
+                String subscriberTypeName = description.getSubscriberName();
+                String methodName = description.getMethodName();
 
                 emitIndent(writer, 3);
                 writer.write(String.format("if (subscriber instanceof %s) {\n",
@@ -114,11 +111,5 @@ public class BustardEmitter {
         writer.write("}\n\n");
 
         writer.write("}");
-    }
-
-    private class SubscribeMethod {
-        private String subscriberTypeName;
-        private String methodName;
-        private String qualifier;
     }
 }

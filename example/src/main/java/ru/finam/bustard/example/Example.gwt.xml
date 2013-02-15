@@ -4,5 +4,5 @@
 
   <source path="" />
 
-  <entry-point class="ru.finam.bustard.example.ExampleGwtApp" />
+  <entry-point class="ru.finam.bustard.example.gwt.ExampleGwtApp" />
 </module>

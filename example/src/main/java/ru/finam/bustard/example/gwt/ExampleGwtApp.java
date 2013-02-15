@@ -1,4 +1,4 @@
-package ru.finam.bustard.example;
+package ru.finam.bustard.example.gwt;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
@@ -7,6 +7,7 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.Button;
 import ru.finam.bustard.Bustard;
+import ru.finam.bustard.example.MessageEvent;
 
 public class ExampleGwtApp implements EntryPoint {
 
