@@ -13,6 +13,6 @@ public class StreamMessageListener {
 
     @Listener
     public void listen(MessageEvent event) {
-        writer.println(event.getMessage());
+        writer.println("StreamMessageListener: " + event.getMessage());
     }
 }

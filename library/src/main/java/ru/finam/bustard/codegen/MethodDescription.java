@@ -4,7 +4,7 @@ public class MethodDescription {
     private final String subscriberName;
     private final String methodName;
     private final String eventName;
-    private final String executeQualifierName;
+    private String executeQualifierName;
 
     public MethodDescription(
             String subscriberName,
@@ -49,5 +49,9 @@ public class MethodDescription {
 
     public String getExecuteQualifierName() {
         return executeQualifierName;
+    }
+
+    public void setExecuteQualifierName(String executeQualifierName) {
+        this.executeQualifierName = executeQualifierName;
     }
 }

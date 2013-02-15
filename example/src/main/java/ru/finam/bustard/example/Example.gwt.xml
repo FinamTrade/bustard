@@ -2,7 +2,9 @@
   <inherits name="com.google.gwt.user.User" />
   <inherits name="ru.finam.bustard.Bustard" />
 
-  <source path="" />
+  <source path="">
+      <exclude name="**/java/**" />
+  </source>
 
   <entry-point class="ru.finam.bustard.example.gwt.ExampleGwtApp" />
 </module>

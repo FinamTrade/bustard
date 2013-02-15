@@ -8,11 +8,14 @@ import ru.finam.bustard.example.StreamMessageListener;
 public class ExampleApp {
     public static void main(String[] args) {
         Bustard bustard = new BustardImpl();
+        bustard.attachExecutors(new AsyncExecutor());
         bustard.initialize();
 
-        StreamMessageListener listener = new StreamMessageListener(System.out);
+        AsyncListener listener = new AsyncListener();
+        StreamMessageListener streamListener = new StreamMessageListener(System.out);
 
         bustard.subscribe(listener);
+        bustard.subscribe(streamListener);
 
         bustard.post(new MessageEvent("Hello World!"));
     }

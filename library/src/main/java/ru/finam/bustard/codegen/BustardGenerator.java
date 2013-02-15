@@ -79,7 +79,7 @@ public class BustardGenerator {
 
             executeQualifierType = annotationType;
         }
-        return null;
+        return executeQualifierType;
     }
 
     public void generate(ProcessingEnvironment environment) throws IOException {
@@ -90,7 +90,7 @@ public class BustardGenerator {
         for (MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
             bustardEmitter.addSubscriber(description);
 
-            if (!"null".equals(description.getExecuteQualifierName())) {
+            if (description.getExecuteQualifierName() != null) {
                 TypeElement qualifierType = environment.getElementUtils()
                         .getTypeElement(description.getExecuteQualifierName());
 

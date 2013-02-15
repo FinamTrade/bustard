@@ -1,6 +1,7 @@
 package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
+import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import ru.finam.bustard.BustardImpl;
 import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
@@ -20,13 +21,21 @@ public class BustardGwtGenerator extends IncrementalGenerator {
         PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
         if (writer != null) {
             try {
+                TypeOracle typeOracle = context.getTypeOracle();
                 BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
                 for(MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
-                    bustardEmitter.addSubscriber(description);
-
                     String executeQualifierName = description.getExecuteQualifierName();
-                    if (executeQualifierName != null) {
+
+                    if (executeQualifierName != null &&
+                            typeOracle.findType(executeQualifierName) != null) {
                         bustardEmitter.addExecutor(executeQualifierName, extractExecutorName(executeQualifierName));
+                    } else if (executeQualifierName != null) {
+                        description.setExecuteQualifierName(null);
+                    }
+
+                    if (typeOracle.findType(description.getSubscriberName()) != null &&
+                            typeOracle.findType(description.getEventName()) != null) {
+                        bustardEmitter.addSubscriber(description);
                     }
                 }
                 bustardEmitter.emit(writer);
