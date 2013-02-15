@@ -3,7 +3,6 @@ package ru.finam.bustard.codegen;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ru.finam.bustard.Bustard;
-import ru.finam.bustard.Executor;
 
 import java.io.IOException;
 import java.io.Writer;

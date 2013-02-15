@@ -23,7 +23,7 @@ public class SubscribersFinder {
     public static final String FILE_PATH = BustardGenerator.PACKAGE_NAME.replace('.', '/') +
             "/" + BustardGenerator.SUBSCRIBERS_FILE_NAME;
 
-    public static Iterable<MethodDescription> retrieveSubscribersInfo() throws IOException {
+    public static Iterable<MethodDescription> retrieveSubscribeMethods() throws IOException {
         ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();
         @SuppressWarnings("unchecked")
         final List<URL> urls = EnumerationUtils.toList(
@@ -31,7 +31,7 @@ public class SubscribersFinder {
         return new Iterable<MethodDescription>() {
             @Override
             public Iterator<MethodDescription> iterator() {
-                return new LineIterator(urls);
+                return new MethodIterator(urls);
             }
         };
     }
@@ -49,14 +49,14 @@ public class SubscribersFinder {
         return contents.toString();
     }
 
-    public static class LineIterator implements Iterator<MethodDescription> {
+    public static class MethodIterator implements Iterator<MethodDescription> {
 
         private Iterator<URL> urls;
 
         private StringTokenizer tokenizer = null;
         private String nextLine = null;
 
-        public LineIterator(List<URL> urls) {
+        public MethodIterator(List<URL> urls) {
             this.urls = urls.iterator();
         }
 

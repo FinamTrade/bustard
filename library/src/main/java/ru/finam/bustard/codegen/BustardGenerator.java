@@ -87,7 +87,7 @@ public class BustardGenerator {
         BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
-        for (MethodDescription description : SubscribersFinder.retrieveSubscribersInfo()) {
+        for (MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
             bustardEmitter.addSubscriber(description);
 
             if (!"null".equals(description.getExecuteQualifierName())) {

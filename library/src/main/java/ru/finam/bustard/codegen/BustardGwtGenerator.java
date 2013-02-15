@@ -21,7 +21,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
         if (writer != null) {
             try {
                 BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
-                for(MethodDescription description : SubscribersFinder.retrieveSubscribersInfo()) {
+                for(MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
                     bustardEmitter.addSubscriber(description);
 
                     String executeQualifierName = description.getExecuteQualifierName();
