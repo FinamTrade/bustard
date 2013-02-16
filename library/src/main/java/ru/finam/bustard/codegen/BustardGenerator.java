@@ -1,10 +1,9 @@
 package ru.finam.bustard.codegen;
 
-import com.google.common.base.Supplier;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import ru.finam.bustard.AbstractBustard;
 import ru.finam.bustard.ExecuteQualifier;
+import ru.finam.bustard.java.AbstractJavaBustard;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.*;
@@ -15,22 +14,18 @@ import javax.tools.JavaFileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class BustardGenerator {
 
-    public static final String PACKAGE_NAME = "ru.finam.bustard";
+    public static final String PACKAGE_NAME = "ru.finam.bustard.java";
     public static final String IMPL_NAME = "BustardImpl";
     public static final String SUBSCRIBERS_FILE_NAME = "subscribers.bustard";
 
-    private Multimap<TypeElement, ExecutableElement> events = Multimaps.newMultimap(
-            new HashMap<TypeElement, Collection<ExecutableElement>>(),
-            new Supplier<Collection<ExecutableElement>>() {
-                @Override
-                public Collection<ExecutableElement> get() {
-                    return new HashSet<ExecutableElement>();
-                }
-            });
+    private Multimap<TypeElement, ExecutableElement> events = HashMultimap.create();
 
     public static TypeElement mirrorToElement(TypeMirror typeMirror) {
         return (TypeElement) ((DeclaredType) typeMirror).asElement();
@@ -84,7 +79,7 @@ public class BustardGenerator {
 
     public void generate(ProcessingEnvironment environment) throws IOException {
         Set<Element> origin = new HashSet<Element>();
-        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractBustard.class);
+        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractJavaBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
         for (MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {

@@ -2,7 +2,7 @@ package ru.finam.bustard.codegen;
 
 
 import org.apache.commons.collections.EnumerationUtils;
-import ru.finam.bustard.BustardImpl;
+import ru.finam.bustard.java.BustardImpl;
 
 import java.io.*;
 import java.net.URISyntaxException;

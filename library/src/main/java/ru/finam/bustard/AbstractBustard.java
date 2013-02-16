@@ -1,34 +1,22 @@
 package ru.finam.bustard;
 
-import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-
-import java.util.*;
 
 public abstract class AbstractBustard implements Bustard {
 
     private final Config config;
     private final Executor defaultExecutor;
+    private final Multimap<Class, Object> subscribers;
 
-    private final Multimap<Class, Object> subscribers = Multimaps.newMultimap(
-            new HashMap<Class, Collection<Object>>(),
-            new Supplier<Collection<Object>>() {
-                @Override
-                public Collection<Object> get() {
-                    return new HashSet<Object>();
-                }
-            });
-
-    public AbstractBustard() {
-        this(new DirectExecutor());
-    }
-
-    public AbstractBustard(Executor defaultExecutor) {
+    public AbstractBustard(Executor defaultExecutor, Multimap<Class, Object> subscribersMap) {
         if (defaultExecutor == null) {
             throw new NullPointerException("defaultExecutor");
         }
+        if (subscribersMap == null) {
+            throw new NullPointerException("subscribersMap");
+        }
         this.defaultExecutor = defaultExecutor;
+        this.subscribers = subscribersMap;
         this.config = new Config();
     }
 

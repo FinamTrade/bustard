@@ -49,7 +49,7 @@ public class BustardEmitter {
         emitIndent(writer, 1);
         writer.write("@Override\n");
         emitIndent(writer, 1);
-        writer.write("protected void initialize(Config config) {\n");
+        writer.write("protected void initialize(ru.finam.bustard.Config config) {\n");
         for (String executeQualifier : executors.keySet()) {
             emitIndent(writer, 2);
             writer.write(String.format("config.addExecuteQualifier(\"%s\", %s.class);\n",

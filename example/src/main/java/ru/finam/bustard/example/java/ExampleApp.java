@@ -1,7 +1,7 @@
 package ru.finam.bustard.example.java;
 
 import ru.finam.bustard.Bustard;
-import ru.finam.bustard.BustardImpl;
+import ru.finam.bustard.java.BustardImpl;
 import ru.finam.bustard.example.MessageEvent;
 import ru.finam.bustard.example.StreamMessageListener;
 

@@ -70,10 +70,10 @@ public class Config {
 
         private SubscriberKey(Class<?> subscriberType, Class<?> eventType) {
             if (subscriberType == null) {
-                throw new UnsupportedOperationException("subscriberType");
+                throw new NullPointerException("subscriberType");
             }
             if (eventType == null) {
-                throw new UnsupportedOperationException("eventType");
+                throw new NullPointerException("eventType");
             }
             this.subscriber = subscriberType;
             this.event = eventType;

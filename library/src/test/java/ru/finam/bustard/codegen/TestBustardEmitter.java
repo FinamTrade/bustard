@@ -2,7 +2,7 @@ package ru.finam.bustard.codegen;
 
 import junit.framework.Assert;
 import org.junit.Test;
-import ru.finam.bustard.AbstractBustard;
+import ru.finam.bustard.java.AbstractJavaBustard;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -16,7 +16,7 @@ public class TestBustardEmitter {
         BustardEmitter emitter = new BustardEmitter(
                 BustardGenerator.PACKAGE_NAME,
                 BustardGenerator.IMPL_NAME,
-                AbstractBustard.class);
+                AbstractJavaBustard.class);
 
         emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
         emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
@@ -24,12 +24,12 @@ public class TestBustardEmitter {
         emitter.emit(writer);
 
         String result =
-                "package ru.finam.bustard;\n" +
+                "package ru.finam.bustard.java;\n" +
                 "\n" +
-                "public class BustardImpl extends ru.finam.bustard.AbstractBustard {\n" +
+                "public class BustardImpl extends ru.finam.bustard.java.AbstractJavaBustard {\n" +
                 "\n" +
                 "    @Override\n" +
-                "    protected void initialize(Config config) {\n" +
+                "    protected void initialize(ru.finam.bustard.Config config) {\n" +
                 "        config.put(Subscriber.class, SomeEvent.class);\n" +
                 "    }\n" +
                 "\n" +

@@ -1,9 +1,11 @@
 package ru.finam.bustard;
 
+import ru.finam.bustard.java.AbstractJavaBustard;
+
 /**
  * How it will be generated
  */
-public class SampleBustard extends AbstractBustard {
+public class SampleBustard extends AbstractJavaBustard {
 
     @Override
     protected void initialize(Config config) {

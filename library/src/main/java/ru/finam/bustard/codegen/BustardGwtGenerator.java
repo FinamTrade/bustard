@@ -2,7 +2,7 @@ package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import ru.finam.bustard.BustardImpl;
+import ru.finam.bustard.java.BustardImpl;
 import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;

@@ -1,9 +1,11 @@
-package ru.finam.bustard;
+package ru.finam.bustard.java;
+
+import ru.finam.bustard.Config;
 
 /**
  * Stub
  */
-public class BustardImpl extends AbstractBustard {
+public class BustardImpl extends AbstractJavaBustard {
 
     @Override
     protected void initialize(Config config) {

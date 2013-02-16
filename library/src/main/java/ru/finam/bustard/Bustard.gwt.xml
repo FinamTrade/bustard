@@ -5,6 +5,7 @@
 
     <source path="">
         <exclude name="**/codegen/**" />
+        <exclude name="**/java/**" />
     </source>
 
     <generate-with class="ru.finam.bustard.codegen.BustardGwtGenerator">
