@@ -23,7 +23,8 @@ public class BustardGenerator {
 
     public static final String PACKAGE_NAME = "ru.finam.bustard.java";
     public static final String IMPL_NAME = "BustardImpl";
-    public static final String SUBSCRIBERS_FILE_NAME = "subscribers.bustard";
+    public static final String LISTENERS_PACKAGE_NAME = "ru.finam.bustard";
+    public static final String LISTENERS_FILE_NAME = "listeners.bustard";
 
     private Multimap<TypeElement, ExecutableElement> events = HashMultimap.create();
 
@@ -82,7 +83,7 @@ public class BustardGenerator {
         BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractJavaBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
-        for (MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
+        for (MethodDescription description : ListenersFinder.retrieveSubscribeMethods()) {
             bustardEmitter.addSubscriber(description);
 
             if (description.getExecuteQualifierName() != null) {
@@ -96,12 +97,12 @@ public class BustardGenerator {
 
         for (TypeElement eventType : events.keySet()) {
             for (ExecutableElement listenerMethod : events.get(eventType)) {
-                TypeElement subscriberType = (TypeElement) listenerMethod.getEnclosingElement();
+                TypeElement listenerType = (TypeElement) listenerMethod.getEnclosingElement();
                 TypeElement qualifierType = getExecuteQualifier(listenerMethod);
 
-                origin.add(subscriberType);
+                origin.add(listenerType);
 
-                String subscriberName = subscriberType.getQualifiedName().toString();
+                String subscriberName = listenerType.getQualifiedName().toString();
                 String eventName = eventType.getQualifiedName().toString();
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
@@ -122,12 +123,12 @@ public class BustardGenerator {
             origin.add(eventType);
         }
 
-        FileObject subscribersFileObject = environment.getFiler().createResource(
+        FileObject lestenersFileObject = environment.getFiler().createResource(
                 StandardLocation.CLASS_OUTPUT,
-                PACKAGE_NAME, SUBSCRIBERS_FILE_NAME,
+                LISTENERS_PACKAGE_NAME, LISTENERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
-        Writer subscribersWriter = subscribersFileObject.openWriter();
+        Writer subscribersWriter = lestenersFileObject.openWriter();
 
         try {
             subscribersWriter.write(subscribersInfo.toString());

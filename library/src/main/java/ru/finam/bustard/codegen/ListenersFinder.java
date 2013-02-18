@@ -13,15 +13,15 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-public class SubscribersFinder {
+public class ListenersFinder {
 
     public static final Pattern LINE_PATTERN =
             Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]*$");
 
-    public static final String FILE_PATH = BustardGenerator.PACKAGE_NAME.replace('.', '/') +
-            "/" + BustardGenerator.SUBSCRIBERS_FILE_NAME;
+    public static final String FILE_PATH = BustardGenerator.LISTENERS_PACKAGE_NAME.replace('.', '/') +
+            "/" + BustardGenerator.LISTENERS_FILE_NAME;
 
     public static Iterable<MethodDescription> retrieveSubscribeMethods() throws IOException {
         ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();

@@ -8,6 +8,7 @@ public class SampleListener {
     }
 
     @SomeQualifier
+    @Listener
     public void listen(String str) {
         lastMessage = str;
     }

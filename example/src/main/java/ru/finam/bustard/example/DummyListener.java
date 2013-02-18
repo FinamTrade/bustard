@@ -1,6 +1,6 @@
 package ru.finam.bustard.example;
 
-import net.engio.mbassy.listener.Listener;
+import ru.finam.bustard.Listener;
 
 public class DummyListener {
     @Listener

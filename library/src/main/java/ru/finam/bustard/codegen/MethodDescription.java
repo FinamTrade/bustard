@@ -1,17 +1,17 @@
 package ru.finam.bustard.codegen;
 
 public class MethodDescription {
-    private final String subscriberName;
+    private final String listenerName;
     private final String methodName;
     private final String eventName;
     private String executeQualifierName;
 
     public MethodDescription(
-            String subscriberName,
+            String listenerName,
             String methodName,
             String eventName,
             String executeQualifierName) {
-        this.subscriberName = subscriberName;
+        this.listenerName = listenerName;
         this.methodName = methodName;
         this.eventName = eventName;
         this.executeQualifierName = executeQualifierName;
@@ -24,19 +24,19 @@ public class MethodDescription {
 
         MethodDescription that = (MethodDescription) o;
 
-        return eventName.equals(that.eventName) && subscriberName.equals(that.subscriberName);
+        return eventName.equals(that.eventName) && listenerName.equals(that.listenerName);
 
     }
 
     @Override
     public int hashCode() {
-        int result = subscriberName.hashCode();
+        int result = listenerName.hashCode();
         result = 31 * result + eventName.hashCode();
         return result;
     }
 
-    public String getSubscriberName() {
-        return subscriberName;
+    public String getListenerName() {
+        return listenerName;
     }
 
     public String getMethodName() {

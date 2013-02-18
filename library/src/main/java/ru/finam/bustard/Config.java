@@ -48,11 +48,11 @@ public class Config {
 
 
 
-    public void put(Class<?> subscriberType, Class<?> eventType, String qualifierName) {
-        eventTypes.put(subscriberType, eventType);
+    public void put(Class<?> listenerType, Class<?> eventType, String qualifierName) {
+        eventTypes.put(listenerType, eventType);
         if (qualifierName != null) {
             Executor executor = executorsByQualifier.get(qualifierName);
-            executors.put(new SubscriberKey(subscriberType, eventType), executor);
+            executors.put(new SubscriberKey(listenerType, eventType), executor);
         }
     }
 

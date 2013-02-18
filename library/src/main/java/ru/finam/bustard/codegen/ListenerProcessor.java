@@ -1,6 +1,6 @@
 package ru.finam.bustard.codegen;
 
-import net.engio.mbassy.listener.Listener;
+import ru.finam.bustard.Listener;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,7 +14,7 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.Set;
 
-@SupportedAnnotationTypes("net.engio.mbassy.listener.Listener")
+@SupportedAnnotationTypes("ru.finam.bustard.Listener")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ListenerProcessor extends AbstractProcessor {
 

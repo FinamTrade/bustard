@@ -1,6 +1,6 @@
 package ru.finam.bustard.example.java;
 
-import net.engio.mbassy.listener.Listener;
+import ru.finam.bustard.Listener;
 import ru.finam.bustard.example.MessageEvent;
 
 public class AsyncListener {

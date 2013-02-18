@@ -23,7 +23,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
             try {
                 TypeOracle typeOracle = context.getTypeOracle();
                 BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
-                for(MethodDescription description : SubscribersFinder.retrieveSubscribeMethods()) {
+                for(MethodDescription description : ListenersFinder.retrieveSubscribeMethods()) {
                     String executeQualifierName = description.getExecuteQualifierName();
 
                     if (executeQualifierName != null &&
@@ -33,7 +33,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
                         description.setExecuteQualifierName(null);
                     }
 
-                    if (typeOracle.findType(description.getSubscriberName()) != null &&
+                    if (typeOracle.findType(description.getListenerName()) != null &&
                             typeOracle.findType(description.getEventName()) != null) {
                         bustardEmitter.addSubscriber(description);
                     }

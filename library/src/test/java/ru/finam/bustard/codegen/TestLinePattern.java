@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.util.regex.Pattern;
 
 public class TestLinePattern {
-    private static Pattern pattern = SubscribersFinder.LINE_PATTERN;
+    private static Pattern pattern = ListenersFinder.LINE_PATTERN;
 
     @Test
     public void test() {
