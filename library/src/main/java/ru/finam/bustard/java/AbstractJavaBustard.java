@@ -14,13 +14,18 @@ import java.util.WeakHashMap;
 public abstract class AbstractJavaBustard extends AbstractBustard {
 
     public static Multimap<Class, Object> createWeakMultiMap() {
-        return Multimaps.newMultimap(new HashMap<Class, Collection<Object>>(),
-                new Supplier<Collection<Object>>() {
-                    @Override
-                    public Collection<Object> get() {
-                        return Collections.newSetFromMap(new WeakHashMap<Object, Boolean>());
-                    }
-                });
+        // TODO: Make concurrent multiMap
+        return Multimaps.synchronizedMultimap(
+                Multimaps.newMultimap(
+                        new HashMap<Class, Collection<Object>>(),
+                        new Supplier<Collection<Object>>() {
+                            @Override
+                            public Collection<Object> get() {
+                                return Collections.newSetFromMap(new WeakHashMap<Object, Boolean>());
+                            }
+                        }
+                )
+        );
     }
 
     public AbstractJavaBustard() {
