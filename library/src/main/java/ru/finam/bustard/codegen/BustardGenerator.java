@@ -3,6 +3,7 @@ package ru.finam.bustard.codegen;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ru.finam.bustard.ExecuteQualifier;
+import ru.finam.bustard.Listener;
 import ru.finam.bustard.java.AbstractJavaBustard;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -102,10 +103,12 @@ public class BustardGenerator {
 
                 origin.add(listenerType);
 
-                String subscriberName = listenerType.getQualifiedName().toString();
+                String listenerName = listenerType.getQualifiedName().toString();
                 String eventName = eventType.getQualifiedName().toString();
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
+
+                boolean eventOnBinding = listenerMethod.getAnnotation(Listener.class).eventOnBinding();
 
                 if (qualifierType != null) {
                     origin.add(qualifierType);
@@ -115,10 +118,10 @@ public class BustardGenerator {
                 }
 
                 bustardEmitter.addSubscriber(new MethodDescription(
-                        subscriberName, methodName, eventName, executeQualifierName));
+                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding));
 
-                subscribersInfo.append(String.format("%s %s %s %s\n",
-                        subscriberName, methodName, eventName, executeQualifierName));
+                subscribersInfo.append(String.format("%s %s %s %s %b\n",
+                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding));
             }
             origin.add(eventType);
         }

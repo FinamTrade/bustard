@@ -2,11 +2,16 @@ package ru.finam.bustard;
 
 import com.google.common.collect.Multimap;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 public abstract class AbstractBustard implements Bustard {
 
     private final Config config;
     private final Executor defaultExecutor;
     private final Multimap<Class, Object> subscribers;
+    private final Map<Class, Object> savedEvents = new HashMap<Class, Object>();
 
     public AbstractBustard(Executor defaultExecutor, Multimap<Class, Object> subscribersMap) {
         if (defaultExecutor == null) {
@@ -36,6 +41,10 @@ public abstract class AbstractBustard implements Bustard {
     @Override
     public void subscribe(Object subscriber) {
         for (Class eventType : config.findEventTypesFor(subscriber.getClass())) {
+            if (config.isEventOnBinding(subscriber.getClass(), eventType) &&
+                    savedEvents.containsKey(eventType)) {
+                postToSubscriber(subscriber, savedEvents.get(eventType));
+            }
             subscribers.put(eventType, subscriber);
         }
     }
@@ -58,9 +67,17 @@ public abstract class AbstractBustard implements Bustard {
 
     @Override
     public void post(Object event) {
-        for (Object subscriber : subscribers.get(event.getClass())) {
-            getExecutorFor(subscriber, event).execute(new PostEvent(subscriber, event));
+        if (config.needToSave(event.getClass())) {
+            savedEvents.put(event.getClass(), event);
         }
+
+        for (Object subscriber : subscribers.get(event.getClass())) {
+            postToSubscriber(subscriber, event);
+        }
+    }
+
+    private void postToSubscriber(Object subscriber, Object event) {
+        getExecutorFor(subscriber, event).execute(new PostEvent(subscriber, event));
     }
 
     private class PostEvent implements Runnable {

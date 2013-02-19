@@ -9,7 +9,8 @@ public class SampleBustard extends AbstractJavaBustard {
 
     @Override
     protected void initialize(Config config) {
-        config.put(SampleListener.class, String.class);
+        config.put(SampleListener.class, String.class, null, false);
+        config.put(EventOnBindingListener.class, String.class, null, true);
     }
 
     @Override
@@ -17,6 +18,9 @@ public class SampleBustard extends AbstractJavaBustard {
         if (event instanceof String) {
             if (subscriber instanceof SampleListener) {
                 ((SampleListener) subscriber).listen((String) event);
+            }
+            if (subscriber instanceof EventOnBindingListener) {
+                ((EventOnBindingListener) subscriber).listen((String) event);
             }
         }
     }

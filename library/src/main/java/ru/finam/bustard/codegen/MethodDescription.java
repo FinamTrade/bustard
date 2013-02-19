@@ -5,16 +5,19 @@ public class MethodDescription {
     private final String methodName;
     private final String eventName;
     private String executeQualifierName;
+    private final boolean eventOnBinding;
 
     public MethodDescription(
             String listenerName,
             String methodName,
             String eventName,
-            String executeQualifierName) {
+            String executeQualifierName,
+            boolean eventOnBinding) {
         this.listenerName = listenerName;
         this.methodName = methodName;
         this.eventName = eventName;
         this.executeQualifierName = executeQualifierName;
+        this.eventOnBinding = eventOnBinding;
     }
 
     @Override
@@ -53,5 +56,9 @@ public class MethodDescription {
 
     public void setExecuteQualifierName(String executeQualifierName) {
         this.executeQualifierName = executeQualifierName;
+    }
+
+    public boolean isEventOnBinding() {
+        return eventOnBinding;
     }
 }

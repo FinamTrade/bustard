@@ -44,4 +44,17 @@ public class AbstractBustardTest {
         Bustard bustard = new SampleBustardWithExecutor();
         bustard.initialize();
     }
+
+    @Test
+    public void eventOnBinding() {
+        Bustard bustard = new SampleBustard();
+        bustard.initialize();
+        bustard.post("Hello");
+        SampleListener listener = new SampleListener();
+        EventOnBindingListener eventOnBindingListener = new EventOnBindingListener();
+        bustard.subscribe(listener);
+        bustard.subscribe(eventOnBindingListener);
+        Assert.assertEquals("Hello", eventOnBindingListener.getLastMessage());
+        Assert.assertEquals(null, listener.getLastMessage());
+    }
 }

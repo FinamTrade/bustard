@@ -6,7 +6,7 @@ public class SampleBustardWithExecutor extends AbstractJavaBustard {
     @Override
     protected void initialize(Config config) {
         config.addExecuteQualifier("SomeQualifier", CounterExecutor.class);
-        config.put(SampleListener.class, String.class, "SomeQualifier");
+        config.put(SampleListener.class, String.class, "SomeQualifier", false);
     }
 
     @Override

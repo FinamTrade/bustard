@@ -58,20 +58,12 @@ public class BustardEmitter {
         }
         for (String eventTypeName : listeners.keySet()) {
             for (MethodDescription description : listeners.get(eventTypeName)) {
-                String listenerTypeName = description.getListenerName();
-                String executeQualifier = description.getExecuteQualifierName();
-
                 emitIndent(writer, 2);
-                if (executeQualifier == null) {
-                    writer.write(String.format("config.put(%s.class, %s.class);\n",
-                            listenerTypeName,
-                            eventTypeName));
-                } else {
-                    writer.write(String.format("config.put(%s.class, %s.class, \"%s\");\n",
-                            listenerTypeName,
-                            eventTypeName,
-                            executeQualifier));
-                }
+                writer.write(String.format("config.put(%s.class, %s.class, %s, %b);\n",
+                        description.getListenerName(),
+                        eventTypeName,
+                        stringLiteral(description.getExecuteQualifierName()),
+                        description.isEventOnBinding()));
             }
         }
         emitIndent(writer, 1);
@@ -87,17 +79,14 @@ public class BustardEmitter {
                     eventTypeName));
 
             for (MethodDescription description : listeners.get(eventTypeName)) {
-                String listenerTypeName = description.getListenerName();
-                String methodName = description.getMethodName();
-
                 emitIndent(writer, 3);
                 writer.write(String.format("if (subscriber instanceof %s) {\n",
-                        listenerTypeName));
+                        description.getListenerName()));
 
                 emitIndent(writer, 4);
                 writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
-                        listenerTypeName,
-                        methodName,
+                        description.getListenerName(),
+                        description.getMethodName(),
                         eventTypeName));
 
                 emitIndent(writer, 3);
@@ -110,5 +99,9 @@ public class BustardEmitter {
         writer.write("}\n\n");
 
         writer.write("}");
+    }
+
+    private String stringLiteral(String value) {
+        return value == null ? String.valueOf((Object) null) : String.format("\"%s\"", value);
     }
 }

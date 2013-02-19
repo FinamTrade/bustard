@@ -7,15 +7,12 @@ import java.util.*;
 
 public class Config {
     private final Multimap<Class<?>, Class<?>> eventTypes = HashMultimap.create();
+    private final Multimap<Class<?>, Class<?>> eventsOnBinding = HashMultimap.create();
     private final Map<SubscriberKey, Executor> executors = new HashMap<SubscriberKey, Executor>();
     private final Map<String, Executor> executorsByQualifier = new HashMap<String, Executor>();
     private final List<Executor> executorList = new ArrayList<Executor>();
 
     public Config() {
-    }
-
-    public void put(Class<?> subscriberType, Class<?> eventType) {
-        put(subscriberType, eventType, null);
     }
 
     public void attachExecutors(Executor... executors) {
@@ -48,11 +45,14 @@ public class Config {
 
 
 
-    public void put(Class<?> listenerType, Class<?> eventType, String qualifierName) {
+    public void put(Class<?> listenerType, Class<?> eventType, String qualifierName, boolean eventOnBinding) {
         eventTypes.put(listenerType, eventType);
         if (qualifierName != null) {
             Executor executor = executorsByQualifier.get(qualifierName);
             executors.put(new SubscriberKey(listenerType, eventType), executor);
+        }
+        if (eventOnBinding) {
+            eventsOnBinding.put(eventType, listenerType);
         }
     }
 
@@ -62,6 +62,16 @@ public class Config {
 
     public Executor findExecutorFor(Class<?> subscriberType, Class<?> eventType) {
         return executors.get(new SubscriberKey(subscriberType, eventType));
+    }
+
+    public boolean isEventOnBinding(Class<?> subscriberType, Class<?> eventType) {
+        return eventsOnBinding.get(eventType) != null &&
+                eventsOnBinding.get(eventType).contains(subscriberType);
+    }
+
+    public boolean needToSave(Class<?> eventType) {
+        return eventsOnBinding.get(eventType) != null &&
+                !eventsOnBinding.get(eventType).isEmpty();
     }
 
     private class SubscriberKey {

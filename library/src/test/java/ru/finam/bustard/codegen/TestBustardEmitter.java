@@ -18,8 +18,8 @@ public class TestBustardEmitter {
                 BustardGenerator.IMPL_NAME,
                 AbstractJavaBustard.class);
 
-        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
-        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null));
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false));
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false));
 
         emitter.emit(writer);
 
@@ -30,7 +30,7 @@ public class TestBustardEmitter {
                 "\n" +
                 "    @Override\n" +
                 "    protected void initialize(ru.finam.bustard.Config config) {\n" +
-                "        config.put(Subscriber.class, SomeEvent.class);\n" +
+                "        config.put(Subscriber.class, SomeEvent.class, null, false);\n" +
                 "    }\n" +
                 "\n" +
                 "    @Override\n" +
