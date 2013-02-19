@@ -8,22 +8,22 @@ public class AbstractBustardTest {
     public void implementingBustard() {
         Bustard bustard = new SampleBustard();
         bustard.initialize();
-        SampleListener listener = new SampleListener();
+        BufferListener listener = new BufferListener();
         bustard.subscribe(listener);
         bustard.post("Hello, World!");
-        Assert.assertEquals("Hello, World!", listener.getLastMessage());
+        Assert.assertEquals("Hello, World!", listener.getBuffer());
     }
 
     @Test
     public void unsubscribeListener() {
         Bustard bustard = new SampleBustard();
         bustard.initialize();
-        SampleListener listener = new SampleListener();
+        BufferListener listener = new BufferListener();
         bustard.subscribe(listener);
         bustard.post("Hi");
         bustard.unsubscribe(listener);
         bustard.post("Bye");
-        Assert.assertEquals("Hi", listener.getLastMessage());
+        Assert.assertEquals("Hi", listener.getBuffer());
     }
 
     @Test
@@ -32,10 +32,10 @@ public class AbstractBustardTest {
         CounterExecutor counterExecutor = new CounterExecutor();
         bustard.attachExecutors(counterExecutor);
         bustard.initialize();
-        SampleListener listener = new SampleListener();
+        BufferListener listener = new BufferListener();
         bustard.subscribe(listener);
         bustard.post("Hello, World!");
-        Assert.assertEquals("Hello, World!", listener.getLastMessage());
+        Assert.assertEquals("Hello, World!", listener.getBuffer());
         Assert.assertEquals(1, counterExecutor.getCount());
     }
 
@@ -50,11 +50,11 @@ public class AbstractBustardTest {
         Bustard bustard = new SampleBustard();
         bustard.initialize();
         bustard.post("Hello");
-        SampleListener listener = new SampleListener();
+        BufferListener listener = new BufferListener();
         EventOnBindingListener eventOnBindingListener = new EventOnBindingListener();
         bustard.subscribe(listener);
         bustard.subscribe(eventOnBindingListener);
-        Assert.assertEquals("Hello", eventOnBindingListener.getLastMessage());
-        Assert.assertEquals(null, listener.getLastMessage());
+        Assert.assertEquals("Hello", eventOnBindingListener.getBuffer());
+        Assert.assertEquals("", listener.getBuffer());
     }
 }

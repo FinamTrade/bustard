@@ -1,19 +1,14 @@
 package ru.finam.bustard;
 
-/**
- * Created with IntelliJ IDEA.
- * User: ylevin
- * Date: 19.02.13
- * Time: 15:16
- */
-public class EventOnBindingListener {
+public class BufferListener {
+
     private StringBuffer buffer = new StringBuffer();
 
-    public EventOnBindingListener() {
+    public BufferListener() {
     }
 
     @SomeQualifier
-    @Listener(eventOnBinding = true)
+    @Listener
     public void listen(String str) {
         buffer.append(str);
     }
