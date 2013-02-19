@@ -70,8 +70,7 @@ public class Config {
     }
 
     public boolean needToSave(Class<?> eventType) {
-        return eventsOnBinding.get(eventType) != null &&
-                !eventsOnBinding.get(eventType).isEmpty();
+        return eventsOnBinding.containsKey(eventType);
     }
 
     private class SubscriberKey {
