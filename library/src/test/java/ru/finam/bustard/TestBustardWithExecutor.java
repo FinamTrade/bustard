@@ -2,7 +2,7 @@ package ru.finam.bustard;
 
 import ru.finam.bustard.java.AbstractJavaBustard;
 
-public class SampleBustardWithExecutor extends AbstractJavaBustard {
+public class TestBustardWithExecutor extends AbstractJavaBustard {
     @Override
     protected void initialize(Config config) {
         config.addExecuteQualifier("SomeQualifier", CounterExecutor.class);

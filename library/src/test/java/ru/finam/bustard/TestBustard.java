@@ -5,7 +5,7 @@ import ru.finam.bustard.java.AbstractJavaBustard;
 /**
  * How it will be generated
  */
-public class SampleBustard extends AbstractJavaBustard {
+public class TestBustard extends AbstractJavaBustard {
 
     @Override
     protected void initialize(Config config) {

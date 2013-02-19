@@ -6,7 +6,7 @@ import org.junit.Test;
 public class AbstractBustardTest {
     @Test
     public void implementingBustard() {
-        Bustard bustard = new SampleBustard();
+        Bustard bustard = new TestBustard();
         bustard.initialize();
         BufferListener listener = new BufferListener();
         bustard.subscribe(listener);
@@ -16,7 +16,7 @@ public class AbstractBustardTest {
 
     @Test
     public void unsubscribeListener() {
-        Bustard bustard = new SampleBustard();
+        Bustard bustard = new TestBustard();
         bustard.initialize();
         BufferListener listener = new BufferListener();
         bustard.subscribe(listener);
@@ -28,7 +28,7 @@ public class AbstractBustardTest {
 
     @Test
     public void attachExecutorToBustard() {
-        Bustard bustard = new SampleBustardWithExecutor();
+        Bustard bustard = new TestBustardWithExecutor();
         CounterExecutor counterExecutor = new CounterExecutor();
         bustard.attachExecutors(counterExecutor);
         bustard.initialize();
@@ -41,13 +41,13 @@ public class AbstractBustardTest {
 
     @Test(expected = IllegalStateException.class)
     public void noExecutor() {
-        Bustard bustard = new SampleBustardWithExecutor();
+        Bustard bustard = new TestBustardWithExecutor();
         bustard.initialize();
     }
 
     @Test
     public void eventOnBinding() {
-        Bustard bustard = new SampleBustard();
+        Bustard bustard = new TestBustard();
         bustard.initialize();
         bustard.post("Hello");
         BufferListener listener = new BufferListener();

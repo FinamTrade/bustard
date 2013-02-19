@@ -11,17 +11,23 @@ public abstract class AbstractBustard implements Bustard {
     private final Config config;
     private final Executor defaultExecutor;
     private final Multimap<Class, Object> subscribers;
-    private final Map<Class, Object> savedEvents = new HashMap<Class, Object>();
+    private final Map<Class, Object> savedEvents;
 
-    public AbstractBustard(Executor defaultExecutor, Multimap<Class, Object> subscribersMap) {
+    public AbstractBustard(Executor defaultExecutor,
+                           Multimap<Class, Object> subscribersMap,
+                           Map<Class, Object> eventsMap) {
         if (defaultExecutor == null) {
             throw new NullPointerException("defaultExecutor");
         }
         if (subscribersMap == null) {
             throw new NullPointerException("subscribersMap");
         }
+        if (eventsMap == null) {
+            throw new NullPointerException("eventsMap");
+        }
         this.defaultExecutor = defaultExecutor;
         this.subscribers = subscribersMap;
+        this.savedEvents = eventsMap;
         this.config = new Config();
     }
 

@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractJavaBustard extends AbstractBustard {
 
@@ -29,6 +30,6 @@ public abstract class AbstractJavaBustard extends AbstractBustard {
     }
 
     public AbstractJavaBustard() {
-        super(new DirectExecutor(), createWeakMultiMap());
+        super(new DirectExecutor(), createWeakMultiMap(), new ConcurrentHashMap<Class, Object>());
     }
 }
