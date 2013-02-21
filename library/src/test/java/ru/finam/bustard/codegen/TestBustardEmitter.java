@@ -18,8 +18,8 @@ public class TestBustardEmitter {
                 BustardGenerator.IMPL_NAME,
                 AbstractJavaBustard.class);
 
-        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false));
-        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false));
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false, ""));
+        emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false, ""));
 
         emitter.emit(writer);
 
@@ -30,14 +30,16 @@ public class TestBustardEmitter {
                 "\n" +
                 "    @Override\n" +
                 "    protected void initialize(ru.finam.bustard.Config config) {\n" +
-                "        config.put(Subscriber.class, SomeEvent.class, null, false);\n" +
+                "        config.put(Subscriber.class, SomeEvent.class, \"\", null, false);\n" +
                 "    }\n" +
                 "\n" +
                 "    @Override\n" +
-                "    protected void post(Object subscriber, Object event) throws Throwable {\n" +
-                "        if (event instanceof SomeEvent) {\n" +
-                "            if (subscriber instanceof Subscriber) {\n" +
-                "                ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
+                "    protected void post(Object subscriber, Object event, String topic) throws Throwable {\n" +
+                "        if (topic.equals(\"\")) {\n" +
+                "            if (event instanceof SomeEvent) {\n" +
+                "                if (subscriber instanceof Subscriber) {\n" +
+                "                    ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
+                "                }\n" +
                 "            }\n" +
                 "        }\n" +
                 "    }\n" +

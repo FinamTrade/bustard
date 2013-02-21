@@ -4,6 +4,7 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import ru.finam.bustard.AbstractBustard;
+import ru.finam.bustard.ChannelKey;
 import ru.finam.bustard.DirectExecutor;
 
 import java.util.Collection;
@@ -14,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractJavaBustard extends AbstractBustard {
 
-    public static Multimap<Class, Object> createWeakMultiMap() {
+    public static Multimap<ChannelKey, Object> createWeakMultiMap() {
         // TODO: Make concurrent multiMap
         return Multimaps.synchronizedMultimap(
                 Multimaps.newMultimap(
-                        new HashMap<Class, Collection<Object>>(),
+                        new HashMap<ChannelKey, Collection<Object>>(),
                         new Supplier<Collection<Object>>() {
                             @Override
                             public Collection<Object> get() {
@@ -30,6 +31,6 @@ public abstract class AbstractJavaBustard extends AbstractBustard {
     }
 
     public AbstractJavaBustard() {
-        super(new DirectExecutor(), createWeakMultiMap(), new ConcurrentHashMap<Class, Object>());
+        super(new DirectExecutor(), createWeakMultiMap(), new ConcurrentHashMap<ChannelKey, Object>());
     }
 }

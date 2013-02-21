@@ -57,4 +57,18 @@ public class AbstractBustardTest {
         Assert.assertEquals("Hello", eventOnBindingListener.getBuffer());
         Assert.assertEquals("", listener.getBuffer());
     }
+
+    @Test
+    public void eventTopic() {
+        Bustard bustard = new TestBustard();
+        bustard.initialize();
+        BufferListener listener = new BufferListener();
+        TopicListener topicListener = new TopicListener();
+        bustard.subscribe(listener);
+        bustard.subscribe(topicListener);
+        bustard.post("Foo");
+        bustard.getChannelFor(new ChannelKey<String>(String.class, "SomeTopic")).post("Bar");
+        Assert.assertEquals("Foo", listener.getBuffer());
+        Assert.assertEquals("Bar", topicListener.getBuffer());
+    }
 }

@@ -108,7 +108,9 @@ public class BustardGenerator {
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
 
-                boolean eventOnBinding = listenerMethod.getAnnotation(Listener.class).eventOnBinding();
+                Listener listenerAnnotation = listenerMethod.getAnnotation(Listener.class);
+                boolean eventOnBinding = listenerAnnotation.eventOnBinding();
+                String topic = listenerAnnotation.topic();
 
                 if (qualifierType != null) {
                     origin.add(qualifierType);
@@ -118,10 +120,10 @@ public class BustardGenerator {
                 }
 
                 bustardEmitter.addSubscriber(new MethodDescription(
-                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding));
+                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding, topic));
 
-                subscribersInfo.append(String.format("%s %s %s %s %b\n",
-                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding));
+                subscribersInfo.append(String.format("%s %s %s %s %b %s\n",
+                        listenerName, methodName, eventName, executeQualifierName, eventOnBinding, topic));
             }
             origin.add(eventType);
         }

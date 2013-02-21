@@ -6,8 +6,8 @@ import com.google.common.collect.Multimap;
 import java.util.*;
 
 public class Config {
-    private final Multimap<Class<?>, Class<?>> eventTypes = HashMultimap.create();
-    private final Multimap<Class<?>, Class<?>> eventsOnBinding = HashMultimap.create();
+    private final Multimap<Class<?>, ChannelKey<?>> eventTypes = HashMultimap.create();
+    private final Multimap<ChannelKey<?>, Class<?>> eventsOnBinding = HashMultimap.create();
     private final Map<SubscriberKey, Executor> executors = new HashMap<SubscriberKey, Executor>();
     private final Map<String, Executor> executorsByQualifier = new HashMap<String, Executor>();
     private final List<Executor> executorList = new ArrayList<Executor>();
@@ -43,49 +43,60 @@ public class Config {
         return type == superType;
     }
 
+    @SuppressWarnings("unchecked")
+    private ChannelKey<?> key(Class<?> eventType, String topic) {
+        return new ChannelKey(eventType, topic);
+    }
 
+    public void put(Class<?> listenerType, Class<?> eventType,
+                    String topic, String qualifierName, boolean eventOnBinding) {
+        ChannelKey key = key(eventType, topic);
 
-    public void put(Class<?> listenerType, Class<?> eventType, String qualifierName, boolean eventOnBinding) {
-        eventTypes.put(listenerType, eventType);
+        eventTypes.put(listenerType, key);
         if (qualifierName != null) {
             Executor executor = executorsByQualifier.get(qualifierName);
-            executors.put(new SubscriberKey(listenerType, eventType), executor);
+            executors.put(new SubscriberKey(listenerType, eventType, topic), executor);
         }
         if (eventOnBinding) {
-            eventsOnBinding.put(eventType, listenerType);
+            eventsOnBinding.put(key, listenerType);
         }
     }
 
-    public Collection<Class<?>> findEventTypesFor(Class<?> subscriberType) {
+    public Collection<ChannelKey<?>> findEventTypesFor(Class<?> subscriberType) {
         return eventTypes.get(subscriberType);
     }
 
-    public Executor findExecutorFor(Class<?> subscriberType, Class<?> eventType) {
-        return executors.get(new SubscriberKey(subscriberType, eventType));
+    public Executor findExecutorFor(Class<?> subscriberType, ChannelKey<?> eventType) {
+        return executors.get(new SubscriberKey(subscriberType, eventType.getEventType(), eventType.getTopic()));
     }
 
-    public boolean isEventOnBinding(Class<?> subscriberType, Class<?> eventType) {
-        return eventsOnBinding.get(eventType) != null &&
-                eventsOnBinding.get(eventType).contains(subscriberType);
+    public boolean isEventOnBinding(Class<?> subscriberType, ChannelKey<?> key) {
+        return eventsOnBinding.get(key) != null &&
+                eventsOnBinding.get(key).contains(subscriberType);
     }
 
-    public boolean needToSave(Class<?> eventType) {
+    public boolean needToSave(ChannelKey<?> eventType) {
         return eventsOnBinding.containsKey(eventType);
     }
 
     private class SubscriberKey {
         private final Class subscriber;
         private final Class event;
+        private final String topic;
 
-        private SubscriberKey(Class<?> subscriberType, Class<?> eventType) {
+        private SubscriberKey(Class<?> subscriberType, Class<?> eventType, String topic) {
             if (subscriberType == null) {
                 throw new NullPointerException("subscriberType");
             }
             if (eventType == null) {
                 throw new NullPointerException("eventType");
             }
+            if (topic == null) {
+                throw new NullPointerException("topic");
+            }
             this.subscriber = subscriberType;
             this.event = eventType;
+            this.topic = topic;
         }
 
         @Override
@@ -95,13 +106,17 @@ public class Config {
 
             SubscriberKey that = (SubscriberKey) o;
 
-            return event == that.event && subscriber == that.subscriber;
+            return event == that.event &&
+                    subscriber == that.subscriber &&
+                    topic.equals(that.topic);
+
         }
 
         @Override
         public int hashCode() {
             int result = subscriber.hashCode();
             result = 31 * result + event.hashCode();
+            result = 31 * result + topic.hashCode();
             return result;
         }
     }

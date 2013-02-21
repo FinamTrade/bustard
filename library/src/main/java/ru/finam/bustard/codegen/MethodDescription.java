@@ -6,18 +6,21 @@ public class MethodDescription {
     private final String eventName;
     private String executeQualifierName;
     private final boolean eventOnBinding;
+    private final String topic;
 
     public MethodDescription(
             String listenerName,
             String methodName,
             String eventName,
             String executeQualifierName,
-            boolean eventOnBinding) {
+            boolean eventOnBinding,
+            String topic) {
         this.listenerName = listenerName;
         this.methodName = methodName;
         this.eventName = eventName;
         this.executeQualifierName = executeQualifierName;
         this.eventOnBinding = eventOnBinding;
+        this.topic = topic;
     }
 
     @Override
@@ -27,14 +30,16 @@ public class MethodDescription {
 
         MethodDescription that = (MethodDescription) o;
 
-        return eventName.equals(that.eventName) && listenerName.equals(that.listenerName);
-
+        return eventName.equals(that.eventName) &&
+                listenerName.equals(that.listenerName) &&
+                !(topic != null ? !topic.equals(that.topic) : that.topic != null);
     }
 
     @Override
     public int hashCode() {
         int result = listenerName.hashCode();
         result = 31 * result + eventName.hashCode();
+        result = 31 * result + (topic != null ? topic.hashCode() : 0);
         return result;
     }
 
@@ -60,5 +65,9 @@ public class MethodDescription {
 
     public boolean isEventOnBinding() {
         return eventOnBinding;
+    }
+
+    public String getTopic() {
+        return topic;
     }
 }

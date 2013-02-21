@@ -13,7 +13,7 @@ public class BustardImpl extends AbstractJavaBustard {
     }
 
     @Override
-    protected void post(Object subscriber, Object event) throws Throwable {
+    protected void post(Object subscriber, Object event, String topic) throws Throwable {
         throw new UnsupportedOperationException("Stub bustard using.");
     }
 }

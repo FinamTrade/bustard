@@ -16,7 +16,9 @@ public class BustardEmitter {
     private final Class<? extends Bustard> supertype;
     private static final String INDENT = "    ";
 
-    private Multimap<String, MethodDescription> listeners = HashMultimap.create();
+    private Map<Topic, Multimap<String, MethodDescription>> listeners =
+            new HashMap<Topic, Multimap<String, MethodDescription>>();
+
     private Map<String, String> executors = new HashMap<String, String>();
 
     public BustardEmitter(String pkgName, String implSimpleName,
@@ -31,7 +33,16 @@ public class BustardEmitter {
     }
 
     public void addSubscriber(MethodDescription description) {
-        listeners.put(description.getEventName(), description);
+        Topic topic = new Topic(description.getTopic());
+
+        Multimap<String, MethodDescription> topicMap = listeners.get(topic);
+
+        if (topicMap == null) {
+            topicMap = HashMultimap.create();
+            listeners.put(topic, topicMap);
+        }
+
+        topicMap.put(description.getEventName(), description);
     }
 
     private void emitIndent(Writer writer, int level) throws IOException {
@@ -56,14 +67,18 @@ public class BustardEmitter {
                     executeQualifier,
                     executors.get(executeQualifier)));
         }
-        for (String eventTypeName : listeners.keySet()) {
-            for (MethodDescription description : listeners.get(eventTypeName)) {
-                emitIndent(writer, 2);
-                writer.write(String.format("config.put(%s.class, %s.class, %s, %b);\n",
-                        description.getListenerName(),
-                        eventTypeName,
-                        stringLiteral(description.getExecuteQualifierName()),
-                        description.isEventOnBinding()));
+        for (Topic topic : listeners.keySet()) {
+            Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
+            for (String eventTypeName : topicListeners.keySet()) {
+                for (MethodDescription description : topicListeners.get(eventTypeName)) {
+                    emitIndent(writer, 2);
+                    writer.write(String.format("config.put(%s.class, %s.class, %s, %s, %b);\n",
+                            description.getListenerName(),
+                            eventTypeName,
+                            stringLiteral(description.getTopic()),
+                            stringLiteral(description.getExecuteQualifierName()),
+                            description.isEventOnBinding()));
+                }
             }
         }
         emitIndent(writer, 1);
@@ -72,29 +87,53 @@ public class BustardEmitter {
         emitIndent(writer, 1);
         writer.write("@Override\n");
         emitIndent(writer, 1);
-        writer.write("protected void post(Object subscriber, Object event) throws Throwable {\n");
-        for (String eventTypeName : listeners.keySet()) {
+        writer.write("protected void post(Object subscriber, Object event, String topic) throws Throwable {\n");
+        boolean first = true;
+        for (Topic topic : listeners.keySet()) {
+            Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
+
             emitIndent(writer, 2);
-            writer.write(String.format("if (event instanceof %s) {\n",
-                    eventTypeName));
 
-            for (MethodDescription description : listeners.get(eventTypeName)) {
+            if (first) {
+                first = false;
+            } else {
+                writer.write(" else ");
+            }
+
+            if (topic.value == null) {
+                writer.write(String.format("if (topic == null) {\n"));
+            } else {
+                writer.write(String.format("if (topic.equals(\"%s\")) {\n",
+                        topic.value));
+            }
+
+            for (String eventTypeName : topicListeners.keySet()) {
                 emitIndent(writer, 3);
-                writer.write(String.format("if (subscriber instanceof %s) {\n",
-                        description.getListenerName()));
-
-                emitIndent(writer, 4);
-                writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
-                        description.getListenerName(),
-                        description.getMethodName(),
+                writer.write(String.format("if (event instanceof %s) {\n",
                         eventTypeName));
 
+                for (MethodDescription description : topicListeners.get(eventTypeName)) {
+                    emitIndent(writer, 4);
+                    writer.write(String.format("if (subscriber instanceof %s) {\n",
+                            description.getListenerName()));
+
+                    emitIndent(writer, 5);
+                    writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
+                            description.getListenerName(),
+                            description.getMethodName(),
+                            eventTypeName));
+
+                    emitIndent(writer, 4);
+                    writer.write("}\n");
+                }
                 emitIndent(writer, 3);
                 writer.write("}\n");
             }
+
             emitIndent(writer, 2);
-            writer.write("}\n");
+            writer.write("}");
         }
+        writer.write("\n");
         emitIndent(writer, 1);
         writer.write("}\n\n");
 
@@ -103,5 +142,30 @@ public class BustardEmitter {
 
     private String stringLiteral(String value) {
         return value == null ? String.valueOf((Object) null) : String.format("\"%s\"", value);
+    }
+
+    private class Topic {
+        private final String value;
+
+
+        private Topic(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Topic topic = (Topic) o;
+
+            return !(value != null ? !value.equals(topic.value) : topic.value != null);
+
+        }
+
+        @Override
+        public int hashCode() {
+            return value != null ? value.hashCode() : 0;
+        }
     }
 }

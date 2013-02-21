@@ -18,7 +18,7 @@ public class ListenersFinder {
     public static final Pattern LINE_PATTERN =
             Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
-                    "([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* (true|false)$");
+                    "([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* (true|false) [a-zA-Z\\d]*$");
 
     public static final String FILE_PATH = BustardGenerator.LISTENERS_PACKAGE_NAME.replace('.', '/') +
             "/" + BustardGenerator.LISTENERS_FILE_NAME;
@@ -90,7 +90,8 @@ public class ListenersFinder {
 
             String executeQualifier = tokens[3].equals("null") ? null : tokens[3];
             boolean eventOnBinding = Boolean.parseBoolean(tokens[4]);
-            return new MethodDescription(tokens[0], tokens[1], tokens[2], executeQualifier, eventOnBinding);
+            String topic = tokens.length < 6 ? "" : tokens[5];
+            return new MethodDescription(tokens[0], tokens[1], tokens[2], executeQualifier, eventOnBinding, topic);
         }
 
         @Override

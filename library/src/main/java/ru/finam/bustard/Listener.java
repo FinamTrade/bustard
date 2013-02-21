@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Listener {
     public boolean eventOnBinding() default false;
+    public String topic() default "";
 }
