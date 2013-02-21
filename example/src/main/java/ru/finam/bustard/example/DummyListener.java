@@ -3,7 +3,7 @@ package ru.finam.bustard.example;
 import ru.finam.bustard.Listener;
 
 public class DummyListener {
-    @Listener
+    @Listener(topic = "Dummy")
     public void listenString(String str) {
         System.out.println(str);
     }

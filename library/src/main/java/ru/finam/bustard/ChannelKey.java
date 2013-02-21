@@ -4,7 +4,7 @@ public class ChannelKey<T> {
     private final String topic;
     private final Class<T> eventType;
 
-    public ChannelKey(Class<T> eventType, String topic) {
+    ChannelKey(Class<T> eventType, String topic) {
         if (eventType == null) {
             throw new NullPointerException("eventType");
         }
@@ -15,8 +15,16 @@ public class ChannelKey<T> {
         this.eventType = eventType;
     }
 
-    public ChannelKey(Class<T> eventType) {
+    ChannelKey(Class<T> eventType) {
         this(eventType, "");
+    }
+
+    public static <T> ChannelKey<T> get(Class<T> eventType) {
+        return new ChannelKey<T>(eventType);
+    }
+
+    public static <T> ChannelKey<T> get(Class<T> eventType, String topic) {
+        return new ChannelKey<T>(eventType, topic);
     }
 
     @Override

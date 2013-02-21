@@ -67,7 +67,7 @@ public class AbstractBustardTest {
         bustard.subscribe(listener);
         bustard.subscribe(topicListener);
         bustard.post("Foo");
-        bustard.getChannelFor(new ChannelKey<String>(String.class, "SomeTopic")).post("Bar");
+        bustard.getChannelFor(ChannelKey.get(String.class, "SomeTopic")).post("Bar");
         Assert.assertEquals("Foo", listener.getBuffer());
         Assert.assertEquals("Bar", topicListener.getBuffer());
     }

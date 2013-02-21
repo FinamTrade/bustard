@@ -16,8 +16,8 @@ public class BustardEmitter {
     private final Class<? extends Bustard> supertype;
     private static final String INDENT = "    ";
 
-    private Map<Topic, Multimap<String, MethodDescription>> listeners =
-            new HashMap<Topic, Multimap<String, MethodDescription>>();
+    private Map<String, Multimap<String, MethodDescription>> listeners =
+            new HashMap<String, Multimap<String, MethodDescription>>();
 
     private Map<String, String> executors = new HashMap<String, String>();
 
@@ -33,13 +33,11 @@ public class BustardEmitter {
     }
 
     public void addSubscriber(MethodDescription description) {
-        Topic topic = new Topic(description.getTopic());
-
-        Multimap<String, MethodDescription> topicMap = listeners.get(topic);
+        Multimap<String, MethodDescription> topicMap = listeners.get(description.getTopic());
 
         if (topicMap == null) {
             topicMap = HashMultimap.create();
-            listeners.put(topic, topicMap);
+            listeners.put(description.getTopic(), topicMap);
         }
 
         topicMap.put(description.getEventName(), description);
@@ -67,7 +65,7 @@ public class BustardEmitter {
                     executeQualifier,
                     executors.get(executeQualifier)));
         }
-        for (Topic topic : listeners.keySet()) {
+        for (String topic : listeners.keySet()) {
             Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
             for (String eventTypeName : topicListeners.keySet()) {
                 for (MethodDescription description : topicListeners.get(eventTypeName)) {
@@ -89,23 +87,16 @@ public class BustardEmitter {
         emitIndent(writer, 1);
         writer.write("protected void post(Object subscriber, Object event, String topic) throws Throwable {\n");
         boolean first = true;
-        for (Topic topic : listeners.keySet()) {
+        for (String topic : listeners.keySet()) {
             Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
-
-            emitIndent(writer, 2);
 
             if (first) {
                 first = false;
+                emitIndent(writer, 2);
             } else {
                 writer.write(" else ");
             }
-
-            if (topic.value == null) {
-                writer.write(String.format("if (topic == null) {\n"));
-            } else {
-                writer.write(String.format("if (topic.equals(\"%s\")) {\n",
-                        topic.value));
-            }
+            writer.write(String.format("if (\"%s\".equals(topic)) {\n", topic));
 
             for (String eventTypeName : topicListeners.keySet()) {
                 emitIndent(writer, 3);
@@ -142,30 +133,5 @@ public class BustardEmitter {
 
     private String stringLiteral(String value) {
         return value == null ? String.valueOf((Object) null) : String.format("\"%s\"", value);
-    }
-
-    private class Topic {
-        private final String value;
-
-
-        private Topic(String value) {
-            this.value = value;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Topic topic = (Topic) o;
-
-            return !(value != null ? !value.equals(topic.value) : topic.value != null);
-
-        }
-
-        @Override
-        public int hashCode() {
-            return value != null ? value.hashCode() : 0;
-        }
     }
 }

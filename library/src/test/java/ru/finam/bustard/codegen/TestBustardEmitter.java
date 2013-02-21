@@ -35,7 +35,7 @@ public class TestBustardEmitter {
                 "\n" +
                 "    @Override\n" +
                 "    protected void post(Object subscriber, Object event, String topic) throws Throwable {\n" +
-                "        if (topic.equals(\"\")) {\n" +
+                "        if (\"\".equals(topic)) {\n" +
                 "            if (event instanceof SomeEvent) {\n" +
                 "                if (subscriber instanceof Subscriber) {\n" +
                 "                    ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
