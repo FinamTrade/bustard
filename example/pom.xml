@@ -21,6 +21,11 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
+            <groupId>ru.finam</groupId>
+            <artifactId>bustard-java</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.gwt</groupId>
             <artifactId>gwt-servlet</artifactId>
             <version>${gwt.version}</version>
