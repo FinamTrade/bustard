@@ -2,14 +2,13 @@ package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import ru.finam.bustard.java.BustardImpl;
 import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;
 
 import java.io.PrintWriter;
 
-public class BustardGwtGenerator extends IncrementalGenerator {
+public class BustardGwtGenerator extends IncrementalGenerator implements Consts {
 
     private static final String PACKAGE_NAME = "ru.finam.bustard";
     private static final String IMPL_NAME = "BustardGwtImpl";
@@ -23,7 +22,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
             try {
                 TypeOracle typeOracle = context.getTypeOracle();
                 BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractGwtBustard.class);
-                for(MethodDescription description : ListenersFinder.retrieveSubscribeMethods()) {
+                for (MethodDescription description : ListenersFinder.retrieveSubscribeMethods()) {
                     String executeQualifierName = description.getExecuteQualifierName();
 
                     if (executeQualifierName != null &&
@@ -49,7 +48,7 @@ public class BustardGwtGenerator extends IncrementalGenerator {
     }
 
     private String extractExecutorName(String executeQualifierName) throws ClassNotFoundException {
-        Class<?> qualifierType = BustardImpl.class.getClassLoader().loadClass(executeQualifierName);
+        Class<?> qualifierType = AbstractGwtBustard.class.getClassLoader().loadClass(executeQualifierName);
         Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
         return executorType.getCanonicalName();
     }

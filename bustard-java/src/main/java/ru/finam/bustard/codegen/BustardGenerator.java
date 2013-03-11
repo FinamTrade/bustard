@@ -20,13 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BustardGenerator {
-
-    public static final String PACKAGE_NAME = "ru.finam.bustard.java";
-    public static final String IMPL_NAME = "BustardImpl";
-    public static final String LISTENERS_PACKAGE_NAME = "ru.finam.bustard";
-    public static final String LISTENERS_FILE_NAME = "listeners.bustard";
-
+public class BustardGenerator implements Consts{
     private Multimap<TypeElement, ExecutableElement> events = HashMultimap.create();
 
     public static TypeElement mirrorToElement(TypeMirror typeMirror) {

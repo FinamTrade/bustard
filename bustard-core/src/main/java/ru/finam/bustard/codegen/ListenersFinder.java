@@ -1,10 +1,12 @@
 package ru.finam.bustard.codegen;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+import ru.finam.bustard.Bustard;
 
-import org.apache.commons.collections.EnumerationUtils;
-import ru.finam.bustard.java.BustardImpl;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
@@ -13,21 +15,21 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
-public class ListenersFinder {
+public class ListenersFinder implements Consts {
 
     public static final Pattern LINE_PATTERN =
             Pattern.compile("^([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "[a-zA-Z_$][a-zA-Z\\d_$]* ([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* " +
                     "([a-zA-Z_$][a-zA-Z\\d_$]*\\.)*[a-zA-Z_$][a-zA-Z\\d_$]* (true|false) [a-zA-Z\\d]*$");
 
-    public static final String FILE_PATH = BustardGenerator.LISTENERS_PACKAGE_NAME.replace('.', '/') +
-            "/" + BustardGenerator.LISTENERS_FILE_NAME;
+    public static final String FILE_PATH = LISTENERS_PACKAGE_NAME.replace('.', '/') +
+            "/" + LISTENERS_FILE_NAME;
 
     public static Iterable<MethodDescription> retrieveSubscribeMethods() throws IOException {
-        ClassLoader bustardClassLoader = BustardImpl.class.getClassLoader();
+        ClassLoader bustardClassLoader = Bustard.class.getClassLoader();
         @SuppressWarnings("unchecked")
-        final List<URL> urls = EnumerationUtils.toList(
-                bustardClassLoader.getResources(FILE_PATH));
+        final List<URL> urls = Lists.newArrayList(Iterators.forEnumeration(
+                bustardClassLoader.getResources(FILE_PATH)));
         return new Iterable<MethodDescription>() {
             @Override
             public Iterator<MethodDescription> iterator() {
