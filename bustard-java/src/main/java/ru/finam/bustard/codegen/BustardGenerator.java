@@ -2,8 +2,8 @@ package ru.finam.bustard.codegen;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import ru.finam.bustard.Consumes;
 import ru.finam.bustard.ExecuteQualifier;
-import ru.finam.bustard.Listener;
 import ru.finam.bustard.java.AbstractJavaBustard;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -31,7 +31,7 @@ public class BustardGenerator implements Consts{
         List<? extends VariableElement> parameters = listenerMethod.getParameters();
 
         if (parameters.size() != 1) {
-            throw new AssertionError("Listener method " + listenerMethod.toString() +
+            throw new AssertionError("Consumes method " + listenerMethod.toString() +
                     " must have only one argument.");
         }
 
@@ -102,9 +102,9 @@ public class BustardGenerator implements Consts{
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
 
-                Listener listenerAnnotation = listenerMethod.getAnnotation(Listener.class);
-                boolean eventOnBinding = listenerAnnotation.eventOnBinding();
-                String topic = listenerAnnotation.topic();
+                Consumes consumesAnnotation = listenerMethod.getAnnotation(Consumes.class);
+                boolean eventOnBinding = consumesAnnotation.eventOnBinding();
+                String topic = consumesAnnotation.topic();
 
                 if (qualifierType != null) {
                     origin.add(qualifierType);

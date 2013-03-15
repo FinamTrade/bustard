@@ -13,7 +13,7 @@ public class EventOnBindingListener {
     }
 
     @SomeQualifier
-    @Listener(eventOnBinding = true)
+    @Consumes(eventOnBinding = true)
     public void listen(String str) {
         buffer.append(str);
     }

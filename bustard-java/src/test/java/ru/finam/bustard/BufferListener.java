@@ -8,7 +8,7 @@ public class BufferListener {
     }
 
     @SomeQualifier
-    @Listener
+    @Consumes
     public void listen(String str) {
         buffer.append(str);
     }

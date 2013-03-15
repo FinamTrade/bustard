@@ -1,6 +1,6 @@
 package ru.finam.bustard.example;
 
-import ru.finam.bustard.Listener;
+import ru.finam.bustard.Consumes;
 
 import java.io.PrintStream;
 
@@ -11,7 +11,7 @@ public class StreamMessageListener {
         this.writer = writer;
     }
 
-    @Listener
+    @Consumes
     public void listen(MessageEvent event) {
         writer.println("StreamMessageListener: " + event.getMessage());
     }

@@ -1,6 +1,6 @@
 package ru.finam.bustard.codegen;
 
-import ru.finam.bustard.Listener;
+import ru.finam.bustard.Consumes;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -14,7 +14,7 @@ import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.Set;
 
-@SupportedAnnotationTypes("ru.finam.bustard.Listener")
+@SupportedAnnotationTypes("ru.finam.bustard.Consumes")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ListenerProcessor extends AbstractProcessor {
 
@@ -22,7 +22,7 @@ public class ListenerProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        for (Element elem : roundEnv.getElementsAnnotatedWith(Listener.class)) {
+        for (Element elem : roundEnv.getElementsAnnotatedWith(Consumes.class)) {
             generator.addListener((ExecutableElement) elem);
         }
 

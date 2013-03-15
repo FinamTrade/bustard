@@ -7,7 +7,7 @@ public class TopicListener {
     }
 
     @SomeQualifier
-    @Listener(topic = "SomeTopic")
+    @Consumes(topic = "SomeTopic")
     public void listen(String str) {
         buffer.append(str);
     }
