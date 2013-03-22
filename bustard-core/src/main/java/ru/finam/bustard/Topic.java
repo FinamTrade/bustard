@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  * Date: 3/16/13
  */
 @Qualifier
-@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Topic {
     String value();
