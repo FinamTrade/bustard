@@ -1,5 +1,6 @@
 package ru.finam.bustard;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Multimap;
 
 import java.util.Map;
@@ -14,15 +15,10 @@ public abstract class AbstractBustard implements Bustard {
     public AbstractBustard(Executor defaultExecutor,
                            Multimap<ChannelKey, Object> subscribersMap,
                            Map<ChannelKey, Object> eventsMap) {
-        if (defaultExecutor == null) {
-            throw new NullPointerException("defaultExecutor");
-        }
-        if (subscribersMap == null) {
-            throw new NullPointerException("subscribersMap");
-        }
-        if (eventsMap == null) {
-            throw new NullPointerException("eventsMap");
-        }
+        Preconditions.checkNotNull(defaultExecutor, "defaultExecutor");
+        Preconditions.checkNotNull(subscribersMap, "subscribersMap");
+        Preconditions.checkNotNull(eventsMap, "eventsMap");
+
         this.defaultExecutor = defaultExecutor;
         this.subscribers = subscribersMap;
         this.savedEvents = eventsMap;
