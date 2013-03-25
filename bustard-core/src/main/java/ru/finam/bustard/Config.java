@@ -1,5 +1,6 @@
 package ru.finam.bustard;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 
@@ -85,15 +86,10 @@ public class Config {
         private final String topic;
 
         private SubscriberKey(Class<?> subscriberType, Class<?> eventType, String topic) {
-            if (subscriberType == null) {
-                throw new NullPointerException("subscriberType");
-            }
-            if (eventType == null) {
-                throw new NullPointerException("eventType");
-            }
-            if (topic == null) {
-                throw new NullPointerException("topic");
-            }
+            Preconditions.checkNotNull(subscriberType, "subscriberType");
+            Preconditions.checkNotNull(eventType, "eventType");
+            Preconditions.checkNotNull(topic, "topic");
+
             this.subscriber = subscriberType;
             this.event = eventType;
             this.topic = topic;
