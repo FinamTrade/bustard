@@ -1,56 +1,34 @@
 package ru.finam.bustard;
 
-public class ChannelKey<T> {
-    private final String topic;
-    private final Class<T> eventType;
+public class ChannelKey {
 
-    ChannelKey(Class<T> eventType, String topic) {
-        if (eventType == null) {
-            throw new NullPointerException("eventType");
-        }
-        if (topic == null) {
-            throw new NullPointerException("topic");
-        }
-        this.topic = topic;
-        this.eventType = eventType;
+    private static final String SEPARATOR = "/";
+
+    public static String get(String eventTypeName, String topic) {
+        return eventTypeName + SEPARATOR + topic;
     }
 
-    ChannelKey(Class<T> eventType) {
-        this(eventType, "");
+    public static String get(String eventTypeName) {
+        return get(eventTypeName, "");
     }
 
-    public static <T> ChannelKey<T> get(Class<T> eventType) {
-        return new ChannelKey<T>(eventType);
+    public static String get(Class<?> eventType, String topic) {
+        return get(eventType.getName(), topic);
     }
 
-    public static <T> ChannelKey<T> get(Class<T> eventType, String topic) {
-        return new ChannelKey<T>(eventType, topic);
+    public static String get(Class<?> eventType) {
+        return get(eventType.getName());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ChannelKey that = (ChannelKey) o;
-
-        return eventType == that.eventType &&
-                topic.equals(that.topic);
-
+    public static String getTopic(String key) {
+        int index = key.indexOf(SEPARATOR);
+        return key.substring(index + 1);
     }
 
-    @Override
-    public int hashCode() {
-        int result = topic.hashCode();
-        result = 31 * result + eventType.hashCode();
-        return result;
+    public static String getTypeName(String key) {
+        int index = key.indexOf(SEPARATOR);
+        return key.substring(0, index);
     }
 
-    public String getTopic() {
-        return topic;
-    }
 
-    public Class<T> getEventType() {
-        return eventType;
-    }
 }

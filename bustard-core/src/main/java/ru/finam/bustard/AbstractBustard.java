@@ -9,12 +9,12 @@ public abstract class AbstractBustard implements Bustard {
 
     private final Config config;
     private final Executor defaultExecutor;
-    private final Multimap<ChannelKey, Object> subscribers;
-    private final Map<ChannelKey, Object> savedEvents;
+    private final Multimap<String, Object> subscribers;
+    private final Map<String, Object> savedEvents;
 
     public AbstractBustard(Executor defaultExecutor,
-                           Multimap<ChannelKey, Object> subscribersMap,
-                           Map<ChannelKey, Object> eventsMap) {
+                           Multimap<String, Object> subscribersMap,
+                           Map<String, Object> eventsMap) {
         Preconditions.checkNotNull(defaultExecutor, "defaultExecutor");
         Preconditions.checkNotNull(subscribersMap, "subscribersMap");
         Preconditions.checkNotNull(eventsMap, "eventsMap");
@@ -30,7 +30,7 @@ public abstract class AbstractBustard implements Bustard {
     }
 
     @Override
-    public <T> Channel<T> getChannelFor(final ChannelKey<T> key) {
+    public <T> Channel<T> getChannelFor(final String key) {
         return new Channel<T>() {
             @Override
             public void post(T event) {
@@ -41,7 +41,7 @@ public abstract class AbstractBustard implements Bustard {
 
     protected abstract void initialize(Config config);
 
-    protected abstract void post(Object subscriber, Object event, String topic) throws Throwable;
+    protected abstract void post(Object subscriber, Object event, String key) throws Throwable;
 
     @Override
     public void initialize() {
@@ -50,7 +50,7 @@ public abstract class AbstractBustard implements Bustard {
 
     @Override
     public void subscribe(Object subscriber) {
-        for (ChannelKey key : config.findEventTypesFor(subscriber.getClass())) {
+        for (String key : config.findEventTypesFor(subscriber.getClass())) {
             if (config.isEventOnBinding(subscriber.getClass(), key) &&
                     savedEvents.containsKey(key)) {
                 postToSubscriber(subscriber, key, savedEvents.get(key));
@@ -61,12 +61,12 @@ public abstract class AbstractBustard implements Bustard {
 
     @Override
     public void unsubscribe(Object subscriber) {
-        for (ChannelKey key : config.findEventTypesFor(subscriber.getClass())) {
+        for (String key : config.findEventTypesFor(subscriber.getClass())) {
             subscribers.remove(key, subscriber);
         }
     }
 
-    protected Executor getExecutorFor(ChannelKey<?> key, Class<?> subscriber) {
+    protected Executor getExecutorFor(String key, Class<?> subscriber) {
         Executor executor = config.findExecutorFor(subscriber, key);
         if (executor == null) {
             executor = defaultExecutor;
@@ -75,7 +75,7 @@ public abstract class AbstractBustard implements Bustard {
         return executor;
     }
 
-    private <T> void post(ChannelKey<T> key, T event) {
+    private <T> void post(String key, T event) {
         if (config.needToSave(key)) {
             savedEvents.put(key, event);
         }
@@ -86,31 +86,30 @@ public abstract class AbstractBustard implements Bustard {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void post(Object event) {
-        post(new ChannelKey(event.getClass()), event);
+        post(ChannelKey.get(event.getClass()), event);
     }
 
-    private void postToSubscriber(Object subscriber, ChannelKey key, Object event) {
-        getExecutorFor(key, subscriber.getClass()).execute(new PostEvent(subscriber, event, key.getTopic()));
+    private void postToSubscriber(Object subscriber, String key, Object event) {
+        getExecutorFor(key, subscriber.getClass()).execute(new PostEvent(subscriber, event, key));
     }
 
     private class PostEvent implements Runnable {
 
         private final Object subscriber;
         private final Object event;
-        private final String topic;
+        private final String key;
 
-        private PostEvent(Object subscriber, Object event, String topic) {
+        private PostEvent(Object subscriber, Object event, String key) {
             this.subscriber = subscriber;
             this.event = event;
-            this.topic = topic;
+            this.key = key;
         }
 
         @Override
         public void run() {
             try {
-                post(subscriber, event, topic);
+                post(subscriber, event, key);
             } catch (Throwable throwable) {
                 if (!(event instanceof Throwable)) {
                     post(throwable);

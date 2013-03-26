@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class BustardGenerator implements Consts{
-    private Multimap<TypeElement, ExecutableElement> events = HashMultimap.create();
+public class BustardGenerator implements Consts {
+    private Multimap<TypeMirror, ExecutableElement> events = HashMultimap.create();
 
     public static TypeElement mirrorToElement(TypeMirror typeMirror) {
         return (TypeElement) ((DeclaredType) typeMirror).asElement();
@@ -35,8 +35,7 @@ public class BustardGenerator implements Consts{
                     " must have only one argument.");
         }
 
-        TypeElement eventType = mirrorToElement(parameters.get(0).asType());
-        events.put(eventType, listenerMethod);
+        events.put(parameters.get(0).asType(), listenerMethod);
     }
 
     private TypeMirror extractExecutorType(TypeElement qualifierType) {
@@ -90,7 +89,7 @@ public class BustardGenerator implements Consts{
             }
         }
 
-        for (TypeElement eventType : events.keySet()) {
+        for (TypeMirror eventType : events.keySet()) {
             for (ExecutableElement listenerMethod : events.get(eventType)) {
                 TypeElement listenerType = (TypeElement) listenerMethod.getEnclosingElement();
                 TypeElement qualifierType = getExecuteQualifier(listenerMethod);
@@ -98,7 +97,7 @@ public class BustardGenerator implements Consts{
                 origin.add(listenerType);
 
                 String listenerName = listenerType.getQualifiedName().toString();
-                String eventName = eventType.getQualifiedName().toString();
+                String eventName = eventType.toString();
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
 
@@ -119,7 +118,7 @@ public class BustardGenerator implements Consts{
                 subscribersInfo.append(String.format("%s %s %s %s %b %s\n",
                         listenerName, methodName, eventName, executeQualifierName, eventOnBinding, topic));
             }
-            origin.add(eventType);
+            origin.add(mirrorToElement(eventType));
         }
 
         FileObject lestenersFileObject = environment.getFiler().createResource(

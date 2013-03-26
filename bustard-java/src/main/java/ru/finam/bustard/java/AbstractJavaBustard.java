@@ -15,11 +15,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractJavaBustard extends AbstractBustard {
 
-    public static Multimap<ChannelKey, Object> createWeakMultiMap() {
+    public static Multimap<String, Object> createWeakMultiMap() {
         // TODO: Make concurrent multiMap
         return Multimaps.synchronizedMultimap(
                 Multimaps.newMultimap(
-                        new HashMap<ChannelKey, Collection<Object>>(),
+                        new HashMap<String, Collection<Object>>(),
                         new Supplier<Collection<Object>>() {
                             @Override
                             public Collection<Object> get() {
@@ -31,6 +31,6 @@ public abstract class AbstractJavaBustard extends AbstractBustard {
     }
 
     public AbstractJavaBustard() {
-        super(new DirectExecutor(), createWeakMultiMap(), new ConcurrentHashMap<ChannelKey, Object>());
+        super(new DirectExecutor(), createWeakMultiMap(), new ConcurrentHashMap<String, Object>());
     }
 }

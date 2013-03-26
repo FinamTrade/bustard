@@ -3,9 +3,11 @@ package ru.finam.bustard.codegen;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import ru.finam.bustard.Bustard;
+import ru.finam.bustard.ChannelKey;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,8 +18,7 @@ public class BustardEmitter {
     private final Class<? extends Bustard> supertype;
     private static final String INDENT = "    ";
 
-    private Map<String, Multimap<String, MethodDescription>> listeners =
-            new HashMap<String, Multimap<String, MethodDescription>>();
+    private Multimap<String, MethodDescription> listeners = HashMultimap.create();
 
     private Map<String, String> executors = new HashMap<String, String>();
 
@@ -33,14 +34,7 @@ public class BustardEmitter {
     }
 
     public void addSubscriber(MethodDescription description) {
-        Multimap<String, MethodDescription> topicMap = listeners.get(description.getTopic());
-
-        if (topicMap == null) {
-            topicMap = HashMultimap.create();
-            listeners.put(description.getTopic(), topicMap);
-        }
-
-        topicMap.put(description.getEventName(), description);
+        listeners.put(ChannelKey.get(description.getEventName(), description.getTopic()), description);
     }
 
     private void emitIndent(Writer writer, int level) throws IOException {
@@ -65,19 +59,14 @@ public class BustardEmitter {
                     executeQualifier,
                     executors.get(executeQualifier)));
         }
-        for (String topic : listeners.keySet()) {
-            Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
-            for (String eventTypeName : topicListeners.keySet()) {
-                for (MethodDescription description : topicListeners.get(eventTypeName)) {
-                    emitIndent(writer, 2);
-                    writer.write(String.format("config.put(%s.class, %s.class, %s, %s, %b);\n",
-                            description.getListenerName(),
-                            eventTypeName,
-                            stringLiteral(description.getTopic()),
-                            stringLiteral(description.getExecuteQualifierName()),
-                            description.isEventOnBinding()));
-                }
-            }
+        for (MethodDescription description : listeners.values()) {
+            emitIndent(writer, 2);
+            writer.write(String.format("config.put(%s.class, %s, %s, %s, %b);\n",
+                    description.getListenerName(),
+                    stringLiteral(description.getEventName()),
+                    stringLiteral(description.getTopic()),
+                    stringLiteral(description.getExecuteQualifierName()),
+                    description.isEventOnBinding()));
         }
         emitIndent(writer, 1);
         writer.write("}\n\n");
@@ -85,10 +74,10 @@ public class BustardEmitter {
         emitIndent(writer, 1);
         writer.write("@Override\n");
         emitIndent(writer, 1);
-        writer.write("protected void post(Object subscriber, Object event, String topic) throws Throwable {\n");
+        writer.write("protected void post(Object subscriber, Object event, String key) throws Throwable {\n");
         boolean first = true;
-        for (String topic : listeners.keySet()) {
-            Multimap<String, MethodDescription> topicListeners = listeners.get(topic);
+        for (String key : listeners.keySet()) {
+            Collection<MethodDescription> descriptions = listeners.get(key);
 
             if (first) {
                 first = false;
@@ -96,27 +85,19 @@ public class BustardEmitter {
             } else {
                 writer.write(" else ");
             }
-            writer.write(String.format("if (\"%s\".equals(topic)) {\n", topic));
+            writer.write(String.format("if (\"%s\".equals(key)) {\n", key));
 
-            for (String eventTypeName : topicListeners.keySet()) {
+            for (MethodDescription description : descriptions) {
                 emitIndent(writer, 3);
-                writer.write(String.format("if (event instanceof %s) {\n",
-                        eventTypeName));
+                writer.write(String.format("if (subscriber instanceof %s) {\n",
+                        description.getListenerName()));
 
-                for (MethodDescription description : topicListeners.get(eventTypeName)) {
-                    emitIndent(writer, 4);
-                    writer.write(String.format("if (subscriber instanceof %s) {\n",
-                            description.getListenerName()));
+                emitIndent(writer, 4);
+                writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
+                        description.getListenerName(),
+                        description.getMethodName(),
+                        description.getEventName()));
 
-                    emitIndent(writer, 5);
-                    writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
-                            description.getListenerName(),
-                            description.getMethodName(),
-                            eventTypeName));
-
-                    emitIndent(writer, 4);
-                    writer.write("}\n");
-                }
                 emitIndent(writer, 3);
                 writer.write("}\n");
             }

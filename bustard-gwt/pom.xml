@@ -18,7 +18,7 @@
     <dependencies>
         <dependency>
             <groupId>ru.finam</groupId>
-            <artifactId>bustard-core</artifactId>
+            <artifactId>bustard-java</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>

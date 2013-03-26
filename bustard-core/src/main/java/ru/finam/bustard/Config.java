@@ -7,8 +7,8 @@ import com.google.common.collect.Multimap;
 import java.util.*;
 
 public class Config {
-    private final Multimap<Class<?>, ChannelKey<?>> eventTypes = HashMultimap.create();
-    private final Multimap<ChannelKey<?>, Class<?>> eventsOnBinding = HashMultimap.create();
+    private final Multimap<Class<?>, String> eventTypes = HashMultimap.create();
+    private final Multimap<String, Class<?>> eventsOnBinding = HashMultimap.create();
     private final Map<SubscriberKey, Executor> executors = new HashMap<SubscriberKey, Executor>();
     private final Map<String, Executor> executorsByQualifier = new HashMap<String, Executor>();
     private final List<Executor> executorList = new ArrayList<Executor>();
@@ -44,55 +44,47 @@ public class Config {
         return type == superType;
     }
 
-    @SuppressWarnings("unchecked")
-    private ChannelKey<?> key(Class<?> eventType, String topic) {
-        return new ChannelKey(eventType, topic);
-    }
-
-    public void put(Class<?> listenerType, Class<?> eventType,
+    public void put(Class<?> listenerType, String eventTypeName,
                     String topic, String qualifierName, boolean eventOnBinding) {
-        ChannelKey key = key(eventType, topic);
+        String key = ChannelKey.get(eventTypeName, topic);
 
         eventTypes.put(listenerType, key);
         if (qualifierName != null) {
             Executor executor = executorsByQualifier.get(qualifierName);
-            executors.put(new SubscriberKey(listenerType, eventType, topic), executor);
+            executors.put(new SubscriberKey(listenerType, key), executor);
         }
         if (eventOnBinding) {
             eventsOnBinding.put(key, listenerType);
         }
     }
 
-    public Collection<ChannelKey<?>> findEventTypesFor(Class<?> subscriberType) {
+    public Collection<String> findEventTypesFor(Class<?> subscriberType) {
         return eventTypes.get(subscriberType);
     }
 
-    public Executor findExecutorFor(Class<?> subscriberType, ChannelKey<?> eventType) {
-        return executors.get(new SubscriberKey(subscriberType, eventType.getEventType(), eventType.getTopic()));
+    public Executor findExecutorFor(Class<?> subscriberType, String channelKey) {
+        return executors.get(new SubscriberKey(subscriberType, channelKey));
     }
 
-    public boolean isEventOnBinding(Class<?> subscriberType, ChannelKey<?> key) {
+    public boolean isEventOnBinding(Class<?> subscriberType, String key) {
         return eventsOnBinding.get(key) != null &&
                 eventsOnBinding.get(key).contains(subscriberType);
     }
 
-    public boolean needToSave(ChannelKey<?> eventType) {
-        return eventsOnBinding.containsKey(eventType);
+    public boolean needToSave(String channelKey) {
+        return eventsOnBinding.containsKey(channelKey);
     }
 
     private class SubscriberKey {
         private final Class subscriber;
-        private final Class event;
-        private final String topic;
+        private final String channelKey;
 
-        private SubscriberKey(Class<?> subscriberType, Class<?> eventType, String topic) {
+        private SubscriberKey(Class<?> subscriberType, String channelKey) {
             Preconditions.checkNotNull(subscriberType, "subscriberType");
-            Preconditions.checkNotNull(eventType, "eventType");
-            Preconditions.checkNotNull(topic, "topic");
+            Preconditions.checkNotNull(channelKey, "channelKey");
 
             this.subscriber = subscriberType;
-            this.event = eventType;
-            this.topic = topic;
+            this.channelKey = channelKey;
         }
 
         @Override
@@ -102,17 +94,15 @@ public class Config {
 
             SubscriberKey that = (SubscriberKey) o;
 
-            return event == that.event &&
-                    subscriber == that.subscriber &&
-                    topic.equals(that.topic);
+            return subscriber == that.subscriber &&
+                    channelKey.equals(that.channelKey);
 
         }
 
         @Override
         public int hashCode() {
             int result = subscriber.hashCode();
-            result = 31 * result + event.hashCode();
-            result = 31 * result + topic.hashCode();
+            result = 31 * result + channelKey.hashCode();
             return result;
         }
     }

@@ -12,6 +12,7 @@
         <module>bustard-java</module>
         <module>bustard-gwt</module>
         <module>example</module>
+        <module>bustard-dagger</module>
     </modules>
 
     <properties>

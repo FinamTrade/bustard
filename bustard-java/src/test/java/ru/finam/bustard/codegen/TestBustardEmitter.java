@@ -1,7 +1,8 @@
 package ru.finam.bustard.codegen;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
+import ru.finam.bustard.ChannelKey;
 import ru.finam.bustard.java.AbstractJavaBustard;
 
 import java.io.IOException;
@@ -30,16 +31,14 @@ public class TestBustardEmitter {
                 "\n" +
                 "    @Override\n" +
                 "    protected void initialize(ru.finam.bustard.Config config) {\n" +
-                "        config.put(Subscriber.class, SomeEvent.class, \"\", null, false);\n" +
+                "        config.put(Subscriber.class, \"SomeEvent\", \"\", null, false);\n" +
                 "    }\n" +
                 "\n" +
                 "    @Override\n" +
-                "    protected void post(Object subscriber, Object event, String topic) throws Throwable {\n" +
-                "        if (\"\".equals(topic)) {\n" +
-                "            if (event instanceof SomeEvent) {\n" +
-                "                if (subscriber instanceof Subscriber) {\n" +
-                "                    ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
-                "                }\n" +
+                "    protected void post(Object subscriber, Object event, String key) throws Throwable {\n" +
+                "        if (\"" + ChannelKey.get("SomeEvent") + "\".equals(key)) {\n" +
+                "            if (subscriber instanceof Subscriber) {\n" +
+                "                ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
                 "            }\n" +
                 "        }\n" +
                 "    }\n" +
