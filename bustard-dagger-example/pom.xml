@@ -10,6 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bustard-dagger-example</artifactId>
+    <name>Bustard Dagger Example</name>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
@@ -30,6 +32,23 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <annotationProcessors>
+                        <annotationProcessor>
+                            ru.finam.bustard.codegen.InjectChannelProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>
+                            ru.finam.bustard.codegen.ListenerProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>
+                            dagger.internal.codegen.InjectProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>
+                            dagger.internal.codegen.ProvidesProcessor
+                        </annotationProcessor>
+                        <annotationProcessor>
+                            dagger.internal.codegen.FullGraphProcessor
+                        </annotationProcessor>
+                    </annotationProcessors>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>

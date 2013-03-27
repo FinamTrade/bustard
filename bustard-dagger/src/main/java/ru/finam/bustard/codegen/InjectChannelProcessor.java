@@ -10,9 +10,10 @@ import ru.finam.bustard.Topic;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Inject;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
-import javax.lang.model.type.TypeMirror;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.Writer;
@@ -20,17 +21,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SupportedAnnotationTypes("javax.inject.Inject")
-public class InjectProcessor extends AbstractProcessor {
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+public class InjectChannelProcessor extends AbstractProcessor {
 
-    Set<String> channelKeys = new HashSet<String>();
+    private Set<String> channelKeys = new HashSet<String>();
 
-    Set<TypeElement> originTypes = new HashSet<TypeElement>();
+    private Set<TypeElement> originTypes = new HashSet<TypeElement>();
 
     private int channelsCounter = 0;
-
-    TypeMirror channelType = processingEnv.
-            getElementUtils().
-            getTypeElement(Channel.class.getName()).asType();
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -55,7 +53,7 @@ public class InjectProcessor extends AbstractProcessor {
 
                 writer.write(String.format("package %s;\n\n", ChannelModule.class.getPackage().getName()));
                 writer.write(String.format("@%s(complete = false)\n", Module.class.getName()));
-                writer.write(String.format("class %s {\n\n", ChannelModule.class.getSimpleName()));
+                writer.write(String.format("public class %s {\n\n", ChannelModule.class.getSimpleName()));
                 for (String key : channelKeys) {
                     writeProvideMethod(writer, key, true);
                     if (ChannelKey.getTopic(key).isEmpty()) {
@@ -76,20 +74,21 @@ public class InjectProcessor extends AbstractProcessor {
         writer.write(String.format("    @%s\n", Provides.class.getName()));
 
         String topic = ChannelKey.getTopic(channelKey);
-        String channelTypeName = ChannelKey.getTypeName(channelKey);
+        String eventTypeName = ChannelKey.getTypeName(channelKey);
 
         if (withTopic) {
-            writer.write(String.format("    @%s(topic = \"%s\")\n",
+            writer.write(String.format("    @%s(\"%s\")\n",
                     Topic.class.getName(), topic));
         }
-        writer.write(String.format("    public %s provideChannel%d(Bustard bustard) {\n",
-                channelTypeName, channelsCounter++));
+        writer.write(String.format("    public %s<%s> provideChannel%d(Bustard bustard) {\n",
+                Channel.class.getName(), eventTypeName, channelsCounter++));
         writer.write(String.format("        return bustard.getChannelFor(\"%s\");\n", channelKey));
         writer.write(String.format("    }\n\n"));
     }
 
     private void addIfChannel(TypeElement type, VariableElement element) {
-        if(!processingEnv.getTypeUtils().isAssignable(element.asType(), channelType)) {
+        String typeName = element.asType().toString();
+        if(!typeName.startsWith(Channel.class.getName())) {
             return;
         }
 
@@ -99,7 +98,16 @@ public class InjectProcessor extends AbstractProcessor {
             topic = topicAnnotation.value();
         }
 
-        channelKeys.add(ChannelKey.get(element.asType().toString(), topic));
+        int beginIndex = typeName.indexOf('<');
+        int endIndex = typeName.lastIndexOf('>');
+
+        if (beginIndex < 0) {
+            throw new RuntimeException("Must specify generic parameter of Channel type.");
+        }
+
+        String eventType = typeName.substring(beginIndex + 1, endIndex);
+
+        channelKeys.add(ChannelKey.get(eventType, topic));
         originTypes.add(type);
     }
 }
