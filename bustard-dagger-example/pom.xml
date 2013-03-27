@@ -9,17 +9,17 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bustard-dagger</artifactId>
+    <artifactId>bustard-dagger-example</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>ru.finam</groupId>
-            <artifactId>bustard-java</artifactId>
+            <artifactId>bustard-dagger</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.dagger</groupId>
-            <artifactId>dagger</artifactId>
+            <artifactId>dagger-compiler</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
@@ -30,10 +30,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <compilerArgument>-proc:none</compilerArgument>
+                    <compilerArgument>-Xlint:all</compilerArgument>
+                    <showWarnings>true</showWarnings>
+                    <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>
         </plugins>
     </build>
+
 
 </project>
