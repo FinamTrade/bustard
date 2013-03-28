@@ -15,6 +15,7 @@ public class ChannelHolder {
     Channel<List<String>> channel1;
 
     @Inject
+    @Topic
     Channel<List<String>> channel2;
 
     @Inject

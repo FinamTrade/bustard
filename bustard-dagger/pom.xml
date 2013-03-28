@@ -19,7 +19,7 @@
         </dependency>
         <dependency>
             <groupId>com.squareup.dagger</groupId>
-            <artifactId>dagger</artifactId>
+            <artifactId>dagger-compiler</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

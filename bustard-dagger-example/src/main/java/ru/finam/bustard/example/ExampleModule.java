@@ -13,7 +13,7 @@ import ru.finam.bustard.java.BustardImpl;
 public class ExampleModule {
 
     @Provides
-    public Bustard provideBustard(BustardImpl bustardImpl) {
-        return bustardImpl;
+    public Bustard provideBustard() {
+        return new BustardImpl();
     }
 }

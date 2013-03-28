@@ -1,8 +1,10 @@
 package ru.finam.bustard;
 
-// This is a stub.
+import dagger.Module;
+
+@Module(complete = false)
 public class ChannelModule {
     public ChannelModule() {
-        throw new UnsupportedOperationException("Using stub for ChannelModule.");
+        throw new UnsupportedOperationException("Using stub.");
     }
 }
