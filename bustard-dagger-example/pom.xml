@@ -31,27 +31,63 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
                 <configuration>
+                    <generatedSourcesDirectory>
+                        ${project.build.directory}/generated-sources/bustard
+                    </generatedSourcesDirectory>
                     <annotationProcessors>
-                        <annotationProcessor>
-                            ru.finam.bustard.codegen.InjectChannelProcessor
-                        </annotationProcessor>
                         <annotationProcessor>
                             ru.finam.bustard.codegen.ListenerProcessor
                         </annotationProcessor>
                         <annotationProcessor>
-                            dagger.internal.codegen.InjectProcessor
-                        </annotationProcessor>
-                        <annotationProcessor>
-                            dagger.internal.codegen.ProvidesProcessor
-                        </annotationProcessor>
-                        <annotationProcessor>
-                            dagger.internal.codegen.FullGraphProcessor
+                            ru.finam.bustard.codegen.InjectChannelProcessor
                         </annotationProcessor>
                     </annotationProcessors>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.1.0</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <additionalSourceDirectories>
+                        <include>${project.build.directory}/generated-sources/bustard</include>
+                    </additionalSourceDirectories>
+                    <defaultOutputDirectory>
+                        ${project.build.directory}/generated-sources/annotations
+                    </defaultOutputDirectory>
+                    <processors>
+                        <processor>
+                            dagger.internal.codegen.InjectProcessor
+                        </processor>
+                        <processor>
+                            dagger.internal.codegen.ProvidesProcessor
+                        </processor>
+                        <processor>
+                            dagger.internal.codegen.FullGraphProcessor
+                        </processor>
+                    </processors>
                 </configuration>
             </plugin>
         </plugins>
