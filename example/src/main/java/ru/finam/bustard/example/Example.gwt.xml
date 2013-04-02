@@ -1,10 +1,12 @@
 <module rename-to="example">
-  <inherits name="com.google.gwt.user.User" />
-  <inherits name="ru.finam.bustard.Bustard" />
+    <inherits name="com.google.gwt.user.User"/>
+    <inherits name="ru.finam.bustard.Bustard"/>
 
-  <source path="">
-      <exclude name="**/java/**" />
-  </source>
+    <source path="">
+        <exclude name="**/java/**"/>
+    </source>
 
-  <entry-point class="ru.finam.bustard.example.gwt.ExampleGwtApp" />
+    <set-property name="user.agent" value="safari"/>
+
+    <entry-point class="ru.finam.bustard.example.gwt.ExampleGwtApp"/>
 </module>

@@ -8,6 +8,8 @@
         <exclude name="**/java/**" />
     </source>
 
+    <set-property name="user.agent" value="safari"/>
+
     <generate-with class="ru.finam.bustard.codegen.BustardGwtGenerator">
         <when-type-assignable class="ru.finam.bustard.Bustard" />
     </generate-with>
