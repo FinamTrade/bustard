@@ -1,7 +1,5 @@
 package ru.finam.bustard.codegen;
 
-import dagger.Module;
-import dagger.Provides;
 import ru.finam.bustard.Channel;
 import ru.finam.bustard.ChannelKey;
 import ru.finam.bustard.ChannelModule;
@@ -14,7 +12,9 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
+import javax.tools.FileObject;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashSet;
@@ -22,13 +22,11 @@ import java.util.Set;
 
 @SupportedAnnotationTypes("javax.inject.Inject")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-public class InjectChannelProcessor extends AbstractProcessor {
+public class InjectChannelProcessor extends AbstractProcessor implements ChannelsConsts {
 
     private Set<String> channelKeys = new HashSet<String>();
 
     private Set<TypeElement> originTypes = new HashSet<TypeElement>();
-
-    private int channelsCounter = 0;
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -43,47 +41,44 @@ public class InjectChannelProcessor extends AbstractProcessor {
             }
         }
         if (roundEnv.processingOver()) {
-            Writer writer;
             try {
-                JavaFileObject file = processingEnv.getFiler().createSourceFile(
+                FileObject channelsFileObject = processingEnv.getFiler().createResource(
+                        StandardLocation.CLASS_OUTPUT,
+                        CHANNELS_PACKAGE_NAME, CHANNELS_FILE_NAME,
+                        originTypes.toArray(new Element[originTypes.size()]));
+
+                Writer channelsWriter = channelsFileObject.openWriter();
+
+                try {
+                    for (String key : channelKeys) {
+                        channelsWriter.write(key + "\n");
+                    }
+                } finally {
+                    channelsWriter.close();
+                }
+
+                for (String key : ChannelsFinder.retrieveChannelKeys()) {
+                    channelKeys.add(key);
+                }
+
+                ChannelModuleGenerator generator = new ChannelModuleGenerator();
+
+                JavaFileObject channelModuleFile = processingEnv.getFiler().createSourceFile(
                         ChannelModule.class.getName(),
                         originTypes.toArray(new TypeElement[originTypes.size()]));
 
-                writer = file.openWriter();
-
-                writer.write(String.format("package %s;\n\n", ChannelModule.class.getPackage().getName()));
-                writer.write(String.format("@%s(complete = false)\n", Module.class.getName()));
-                writer.write(String.format("public class %s {\n\n", ChannelModule.class.getSimpleName()));
-                for (String key : channelKeys) {
-                    writeProvideMethod(writer, key, true);
-                    if (ChannelKey.getTopic(key).isEmpty()) {
-                        writeProvideMethod(writer, key, false);
-                    }
+                Writer channelModuleWriter = channelModuleFile.openWriter();
+                try {
+                    generator.generate(channelKeys, channelModuleWriter);
+                } finally {
+                    channelModuleWriter.close();
                 }
-                writer.write("}");
-                writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             }
         }
         return true;
-    }
-
-    private void writeProvideMethod(Writer writer, String channelKey, boolean withTopic) throws IOException {
-        writer.write(String.format("    @%s\n", Provides.class.getName()));
-
-        String topic = ChannelKey.getTopic(channelKey);
-        String eventTypeName = ChannelKey.getTypeName(channelKey);
-
-        if (withTopic) {
-            writer.write(String.format("    @%s(\"%s\")\n",
-                    Topic.class.getName(), topic));
-        }
-        writer.write(String.format("    public %s<%s> provideChannel%d(Bustard bustard) {\n",
-                Channel.class.getName(), eventTypeName, channelsCounter++));
-        writer.write(String.format("        return bustard.getChannelFor(\"%s\");\n", channelKey));
-        writer.write(String.format("    }\n\n"));
     }
 
     private void addIfChannel(TypeElement type, VariableElement element) {

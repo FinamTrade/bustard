@@ -121,12 +121,12 @@ public class BustardGenerator implements Consts {
             origin.add(mirrorToElement(eventType));
         }
 
-        FileObject lestenersFileObject = environment.getFiler().createResource(
+        FileObject listenersFileObject = environment.getFiler().createResource(
                 StandardLocation.CLASS_OUTPUT,
                 LISTENERS_PACKAGE_NAME, LISTENERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
-        Writer subscribersWriter = lestenersFileObject.openWriter();
+        Writer subscribersWriter = listenersFileObject.openWriter();
 
         try {
             subscribersWriter.write(subscribersInfo.toString());
