@@ -19,12 +19,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @SupportedAnnotationTypes("javax.inject.Inject")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InjectChannelProcessor extends AbstractProcessor implements ChannelsConsts {
 
-    private Set<String> channelKeys = new HashSet<String>();
+    private Set<String> channelKeys = new TreeSet<String>();
 
     private Set<TypeElement> originTypes = new HashSet<TypeElement>();
 

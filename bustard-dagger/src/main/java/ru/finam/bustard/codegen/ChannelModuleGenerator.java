@@ -10,7 +10,6 @@ import ru.finam.bustard.Topic;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 public class ChannelModuleGenerator {
 
@@ -43,23 +42,5 @@ public class ChannelModuleGenerator {
                 Channel.class.getName(), eventTypeName, counter++));
         writer.write(String.format("        return bustard.getChannelFor(\"%s\");\n", channelKey));
         writer.write(String.format("    }\n\n"));
-    }
-
-    private String generateMethodSuffix(String eventTypeName, String topic) {
-        StringTokenizer tokenizer = new StringTokenizer(eventTypeName, "<,> ", true);
-        StringBuilder result = new StringBuilder();
-        while(tokenizer.hasMoreTokens()) {
-            String token = tokenizer.nextToken();
-            if (token.equals("<")) {
-                result.append("Of");
-            } else if (token.equals(",")) {
-                result.append("And");
-            } else if (token.equals(">") || token.equals(" ")) {
-                // Do Nothing
-            } else {
-                result.append(token.substring(token.lastIndexOf('.') + 1));
-            }
-        }
-        return result.toString() + topic;
     }
 }
