@@ -1,21 +1,23 @@
 package ru.finam.bustard.codegen;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.CharStreams;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class FileLinesParser {
 
     public static List<String> retrieveResource(ClassLoader loader, String filePath) throws IOException {
-        final List<URL> urls = Lists.newArrayList(Iterators.forEnumeration(
-                loader.getResources(filePath)));
-        try {
+        InputStream resourceAsStream = loader.getResourceAsStream(filePath);
+        if (resourceAsStream == null) {
+            return ImmutableList.of();
+        }
+        return CharStreams.readLines(new InputStreamReader(resourceAsStream));
+
+       /* try {
             List<String> result = new ArrayList<String>();
 
             for (URL url : urls) {
@@ -32,10 +34,10 @@ public class FileLinesParser {
             return result;
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
-        }
+        }*/
     }
 
-    private static String readEntireFile(URL fileUrl) throws URISyntaxException, IOException {
+    /*private static String readEntireFile(URL fileUrl) throws URISyntaxException, IOException {
         File file = new File(fileUrl.toURI());
         FileReader reader = new FileReader(file);
         StringBuilder contents = new StringBuilder();
@@ -46,5 +48,5 @@ public class FileLinesParser {
             read = reader.read(buffer);
         } while (read >= 0);
         return contents.toString();
-    }
+    }*/
 }
