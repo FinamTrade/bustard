@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @SupportedAnnotationTypes("javax.inject.Inject")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InjectChannelProcessor extends AbstractProcessor implements ChannelsConsts {
 
     private Set<String> channelKeys = new TreeSet<String>();
@@ -44,7 +43,7 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
         if (roundEnv.processingOver()) {
             try {
                 FileObject channelsFileObject = processingEnv.getFiler().createResource(
-                        StandardLocation.CLASS_OUTPUT,
+                        StandardLocation.SOURCE_OUTPUT,
                         CHANNELS_PACKAGE_NAME, CHANNELS_FILE_NAME,
                         originTypes.toArray(new Element[originTypes.size()]));
 
