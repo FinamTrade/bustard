@@ -1,11 +1,10 @@
 package ru.finam.bustard.codegen;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.Iterators;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
+import com.google.common.io.Resources;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
@@ -16,12 +15,7 @@ public class FileLinesParser {
         List<String> result = new ArrayList<String>();
         while (urls.hasNext()) {
             URL url = urls.next();
-            InputStreamReader reader = new InputStreamReader(url.openStream());
-            try {
-                result.addAll(CharStreams.readLines(reader));
-            } finally {
-                Closeables.closeQuietly(reader);
-            }
+            result.addAll(Resources.readLines(url, Charsets.UTF_8));
         }
         return result;
     }
