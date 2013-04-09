@@ -8,5 +8,6 @@
 # Idea Files #
 .idea
 *.iml
-
+*.ipr
+*.iws
 target

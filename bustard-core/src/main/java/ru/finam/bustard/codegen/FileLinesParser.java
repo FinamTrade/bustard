@@ -1,50 +1,29 @@
 package ru.finam.bustard.codegen;
 
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
+import com.google.common.io.CharStreams;
+import com.google.common.io.Closeables;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
 
 public class FileLinesParser {
 
     public static List<String> retrieveResource(ClassLoader loader, String filePath) throws IOException {
-        final List<URL> urls = Lists.newArrayList(Iterators.forEnumeration(
-                loader.getResources(filePath)));
-        try {
-            List<String> result = new ArrayList<String>();
-
-            for (URL url : urls) {
-                StringTokenizer tokenizer = new StringTokenizer(readEntireFile(url), "\n\r");
-                while (tokenizer.hasMoreTokens()) {
-                    String token = tokenizer.nextToken().trim();
-                    if (token.isEmpty()) {
-                        continue;
-                    }
-
-                    result.add(token);
-                }
+        Iterator<URL> urls = Iterators.forEnumeration(loader.getResources(filePath));
+        List<String> result = new ArrayList<String>();
+        while (urls.hasNext()) {
+            URL url = urls.next();
+            InputStreamReader reader = new InputStreamReader(url.openStream());
+            try {
+                result.addAll(CharStreams.readLines(reader));
+            } finally {
+                Closeables.closeQuietly(reader);
             }
-            return result;
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
         }
+        return result;
     }
 
-    private static String readEntireFile(URL fileUrl) throws URISyntaxException, IOException {
-        File file = new File(fileUrl.toURI());
-        FileReader reader = new FileReader(file);
-        StringBuilder contents = new StringBuilder();
-        char[] buffer = new char[4096];
-        int read = 0;
-        do {
-            contents.append(buffer, 0, read);
-            read = reader.read(buffer);
-        } while (read >= 0);
-        return contents.toString();
-    }
 }
