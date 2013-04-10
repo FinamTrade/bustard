@@ -20,7 +20,7 @@ public class FileLinesParser {
                 result.addAll(Resources.readLines(url, Charsets.UTF_8));
             }
         } catch (FileNotFoundException e) {
-            //ignore exception silently if and return empty list
+            //ignore exception silently and return empty list
         }
         return result;
     }
