@@ -10,11 +10,13 @@
     <modules>
         <module>bustard-core</module>
         <module>bustard-java</module>
-        <!--<module>bustard-gwt</module>
-        <module>example</module>-->
         <module>bustard-dagger</module>
-        <!--<module>bustard-dagger-example</module>
+        <!--<module>bustard-gwt</module>
         <module>bustard-dagger-gwt</module>-->
+<!--
+        <module>example</module>
+        <module>bustard-dagger-example</module>
+-->
     </modules>
 
     <properties>
