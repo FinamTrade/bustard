@@ -57,19 +57,21 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
                     channelsWriter.close();
                 }
 
-                channelKeys.addAll(ChannelsFinder.retrieveChannelKeys());
+                if (!"true".equals(processingEnv.getOptions().get("nobustards"))) {
+                    channelKeys.addAll(ChannelsFinder.retrieveChannelKeys());
 
-                ChannelModuleGenerator generator = new ChannelModuleGenerator();
+                    ChannelModuleGenerator generator = new ChannelModuleGenerator();
 
-                JavaFileObject channelModuleFile = processingEnv.getFiler().createSourceFile(
-                        ChannelModule.class.getName(),
-                        originTypes.toArray(new TypeElement[originTypes.size()]));
+                    JavaFileObject channelModuleFile = processingEnv.getFiler().createSourceFile(
+                            ChannelModule.class.getName(),
+                            originTypes.toArray(new TypeElement[originTypes.size()]));
 
-                Writer channelModuleWriter = channelModuleFile.openWriter();
-                try {
-                    generator.generate(channelKeys, channelModuleWriter);
-                } finally {
-                    channelModuleWriter.close();
+                    Writer channelModuleWriter = channelModuleFile.openWriter();
+                    try {
+                        generator.generate(channelKeys, channelModuleWriter);
+                    } finally {
+                        channelModuleWriter.close();
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

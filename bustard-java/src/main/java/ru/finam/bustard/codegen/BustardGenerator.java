@@ -134,16 +134,18 @@ public class BustardGenerator implements Consts {
             subscribersWriter.close();
         }
 
-        JavaFileObject bustardFileObject = environment.getFiler().createSourceFile(
-                PACKAGE_NAME + "." + IMPL_NAME,
-                origin.toArray(new Element[origin.size()]));
+        if (!"true".equals(environment.getOptions().get("nobustards"))) {
+            JavaFileObject bustardFileObject = environment.getFiler().createSourceFile(
+                    PACKAGE_NAME + "." + IMPL_NAME,
+                    origin.toArray(new Element[origin.size()]));
 
-        Writer bustardFileWriter = bustardFileObject.openWriter();
+            Writer bustardFileWriter = bustardFileObject.openWriter();
 
-        try {
-            bustardEmitter.emit(bustardFileWriter);
-        } finally {
-            bustardFileWriter.close();
+            try {
+                bustardEmitter.emit(bustardFileWriter);
+            } finally {
+                bustardFileWriter.close();
+            }
         }
     }
 }
