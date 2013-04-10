@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.Set;
 
 @SupportedAnnotationTypes("ru.finam.bustard.Consumes")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class ListenerProcessor extends AbstractProcessor {
 
     private BustardGenerator generator = new BustardGenerator();
