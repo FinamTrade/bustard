@@ -24,9 +24,8 @@ import java.util.TreeSet;
 @SupportedAnnotationTypes("javax.inject.Inject")
 public class InjectChannelProcessor extends AbstractProcessor implements ChannelsConsts {
 
-    private Set<String> channelKeys = new TreeSet<String>();
-
-    private Set<TypeElement> originTypes = new HashSet<TypeElement>();
+    private final Set<String> channelKeys = new TreeSet<String>();
+    private final Set<TypeElement> originTypes = new HashSet<TypeElement>();
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -57,9 +56,7 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
                     channelsWriter.close();
                 }
 
-                for (String key : ChannelsFinder.retrieveChannelKeys()) {
-                    channelKeys.add(key);
-                }
+                channelKeys.addAll(ChannelsFinder.retrieveChannelKeys());
 
                 ChannelModuleGenerator generator = new ChannelModuleGenerator();
 

@@ -24,10 +24,15 @@ public class ListenersFinder implements Consts {
 
     private static MethodDescription parseLine(String line) {
         String[] tokens = line.split(" ");
-
-        String executeQualifier = tokens[3].equals("null") ? null : tokens[3];
+        String listenerName = tokens[0];
+        String methodName = tokens[1];
+        String eventName = tokens[2];
+        String executeQualifier = tokens[3];
+        if ("null".equals(executeQualifier)) {
+            executeQualifier = null;
+        }
         boolean eventOnBinding = Boolean.parseBoolean(tokens[4]);
         String topic = tokens.length < 6 ? "" : tokens[5];
-        return new MethodDescription(tokens[0], tokens[1], tokens[2], executeQualifier, eventOnBinding, topic);
+        return new MethodDescription(listenerName, methodName, eventName, executeQualifier, eventOnBinding, topic);
     }
 }
