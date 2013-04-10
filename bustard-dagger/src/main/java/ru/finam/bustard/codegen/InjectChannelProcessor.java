@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @SupportedAnnotationTypes("javax.inject.Inject")
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class InjectChannelProcessor extends AbstractProcessor implements ChannelsConsts {
 
     private Set<String> channelKeys = new TreeSet<String>();
