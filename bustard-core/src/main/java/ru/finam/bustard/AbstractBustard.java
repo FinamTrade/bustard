@@ -25,6 +25,7 @@ public abstract class AbstractBustard implements Bustard {
         this.config = new Config();
     }
 
+    @Override
     public void attachExecutors(Executor... executors) {
         config.attachExecutors(executors);
     }
