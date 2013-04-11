@@ -11,8 +11,8 @@
         <module>bustard-core</module>
         <module>bustard-java</module>
         <module>bustard-dagger</module>
-        <!--<module>bustard-gwt</module>
-        <module>bustard-dagger-gwt</module>-->
+        <module>bustard-gwt</module>
+        <module>bustard-dagger-gwt</module>
 <!--
         <module>example</module>
         <module>bustard-dagger-example</module>
@@ -21,7 +21,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gwt.version>2.5.0</gwt.version>
+        <gwt.version>2.5.1</gwt.version>
     </properties>
 
     <dependencies>
