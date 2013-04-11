@@ -6,21 +6,12 @@ import ru.finam.bustard.Executor;
 public class GwtExecutor implements Executor {
 
     @Override
-    public void execute(Runnable runnable) {
-        new RunnableTimer(runnable).schedule(0);
-    }
-
-    private class RunnableTimer extends Timer {
-
-        final Runnable runnable;
-
-        private RunnableTimer(Runnable runnable) {
-            this.runnable = runnable;
-        }
-
-        @Override
-        public void run() {
-            runnable.run();
-        }
+    public void execute(final Runnable runnable) {
+        new Timer() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }.schedule(0);
     }
 }
