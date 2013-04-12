@@ -43,7 +43,7 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
         if (roundEnv.processingOver()) {
             try {
                 FileObject channelsFileObject = processingEnv.getFiler().createResource(
-                        StandardLocation.SOURCE_OUTPUT,
+                        StandardLocation.CLASS_OUTPUT,
                         CHANNELS_PACKAGE_NAME, CHANNELS_FILE_NAME,
                         originTypes.toArray(new Element[originTypes.size()]));
 

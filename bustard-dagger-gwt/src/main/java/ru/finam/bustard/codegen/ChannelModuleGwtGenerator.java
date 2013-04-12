@@ -14,7 +14,7 @@ public class ChannelModuleGwtGenerator extends IncrementalGenerator {
                                               GeneratorContext context,
                                               String typeName) throws UnableToCompleteException {
         String packageName = ChannelModule.class.getPackage().getName();
-        String simpleName = ChannelModule.class.getName();
+        String simpleName = ChannelModule.class.getSimpleName();
 
         PrintWriter writer = context.tryCreate(logger, packageName, simpleName);
 

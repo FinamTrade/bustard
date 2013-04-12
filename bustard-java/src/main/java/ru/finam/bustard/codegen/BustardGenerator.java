@@ -122,7 +122,7 @@ public class BustardGenerator implements Consts {
         }
 
         FileObject listenersFileObject = environment.getFiler().createResource(
-                StandardLocation.SOURCE_OUTPUT,
+                StandardLocation.CLASS_OUTPUT,
                 LISTENERS_PACKAGE_NAME, LISTENERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
