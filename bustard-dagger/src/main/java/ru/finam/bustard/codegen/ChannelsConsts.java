@@ -1,6 +1,6 @@
 package ru.finam.bustard.codegen;
 
-public interface ChannelsConsts {
+public interface ChannelsConsts extends Consts {
     String CHANNELS_FILE_NAME = "channels.bustard";
-    String CHANNELS_PACKAGE_NAME = "ru.finam.bustard";
+    String CHANNEL_MODULE_NAME = "ChannelModule";
 }

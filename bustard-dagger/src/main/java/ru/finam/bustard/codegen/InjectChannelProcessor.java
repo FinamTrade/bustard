@@ -44,7 +44,7 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
             try {
                 FileObject channelsFileObject = processingEnv.getFiler().createResource(
                         StandardLocation.SOURCE_OUTPUT,
-                        CHANNELS_PACKAGE_NAME, CHANNELS_FILE_NAME,
+                        BUSTARD_PACKAGE_NAME, CHANNELS_FILE_NAME,
                         originTypes.toArray(new Element[originTypes.size()]));
 
                 Writer channelsWriter = channelsFileObject.openWriter();
@@ -63,7 +63,7 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
                     ChannelModuleGenerator generator = new ChannelModuleGenerator();
 
                     JavaFileObject channelModuleFile = processingEnv.getFiler().createSourceFile(
-                            ChannelModule.class.getName(),
+                            BUSTARD_PACKAGE_NAME + "." + CHANNEL_MODULE_NAME,
                             originTypes.toArray(new TypeElement[originTypes.size()]));
 
                     Writer channelModuleWriter = channelModuleFile.openWriter();

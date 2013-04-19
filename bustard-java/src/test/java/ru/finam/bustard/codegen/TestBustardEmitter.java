@@ -15,8 +15,8 @@ public class TestBustardEmitter {
         StringWriter writer = new StringWriter();
 
         BustardEmitter emitter = new BustardEmitter(
-                BustardGenerator.PACKAGE_NAME,
-                BustardGenerator.IMPL_NAME,
+                BustardGenerator.BUSTARD_JAVA_PACKAGE_NAME,
+                BustardGenerator.BUSTARD_IMPL_NAME,
                 AbstractJavaBustard.class);
 
         emitter.addSubscriber(new MethodDescription("Subscriber", "listen", "SomeEvent", null, false, ""));

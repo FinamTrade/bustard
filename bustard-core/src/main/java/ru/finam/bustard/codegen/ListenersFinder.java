@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ListenersFinder implements Consts {
 
-    public static final String FILE_PATH = LISTENERS_PACKAGE_NAME.replace('.', '/') +
+    public static final String FILE_PATH = BUSTARD_PACKAGE_NAME.replace('.', '/') +
             "/" + LISTENERS_FILE_NAME;
 
     public static List<MethodDescription> retrieveSubscribeMethods() throws IOException {

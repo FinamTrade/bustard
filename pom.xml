@@ -13,8 +13,8 @@
         <!--<module>bustard-gwt</module>
         <module>example</module>-->
         <module>bustard-dagger</module>
-        <!--<module>bustard-dagger-example</module>
-        <module>bustard-dagger-gwt</module>-->
+        <module>bustard-dagger-example</module>
+        <!--<module>bustard-dagger-gwt</module>-->
     </modules>
 
     <properties>
