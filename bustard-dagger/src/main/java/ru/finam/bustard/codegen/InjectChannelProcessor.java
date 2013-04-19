@@ -90,6 +90,9 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
         String topic = "";
         Topic topicAnnotation = element.getAnnotation(Topic.class);
         if (topicAnnotation != null) {
+            if (topicAnnotation.value().isEmpty()) {
+                throw new RuntimeException("Topic must contains not empty value.");
+            }
             topic = topicAnnotation.value();
         }
 

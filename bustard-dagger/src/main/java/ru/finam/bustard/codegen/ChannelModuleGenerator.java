@@ -20,9 +20,10 @@ public class ChannelModuleGenerator implements ChannelsConsts {
         writer.write(String.format("@%s(complete = false)\n", Module.class.getName()));
         writer.write(String.format("public class %s {\n\n", CHANNEL_MODULE_NAME));
         for (String key : channelKeys) {
-            writeProvideMethod(writer, key, true);
             if (ChannelKey.getTopic(key).isEmpty()) {
                 writeProvideMethod(writer, key, false);
+            } else {
+                writeProvideMethod(writer, key, true);
             }
         }
         writer.write("}");
