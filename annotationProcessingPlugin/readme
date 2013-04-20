@@ -1,0 +1,24 @@
+Чтобы запустить annotationProcessing для Gradle-проекта
+нужно добавить эти строчки:
+
+buildscript {
+    repositories {
+        maven {
+            url 'http://msk-projects2:81/artifactory/repo'
+        }
+    }
+    dependencies {
+        classpath group: 'ru.finam.GradlePlugins', name: 'AnnotationProcessingPlugin', version: '1.0-SNAPSHOT'
+    }
+}
+
+apply plugin: 'annotationProcessing'
+
+annotationProcessing{
+    inputDir='src/main/java'
+    outputBustardDir='src/generated/bustard/java'
+    outputDaggerDir='src/generated/dagger/java'
+    outputDir='src/generated/'
+    compileBustardClasses = false
+    compileBustardTestClasses = true
+}

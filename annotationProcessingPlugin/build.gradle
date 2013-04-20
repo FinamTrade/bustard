@@ -1,0 +1,32 @@
+defaultTasks 'install'
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'java'
+
+dependencies {
+    compile gradleApi()
+    groovy localGroovy()
+}
+
+version = '1.0-SNAPSHOT'
+group = 'ru.finam.GradlePlugins'
+
+uploadArchives {
+    repositories {
+        maven {
+            url 'http://msk-projects2:81/artifactory/libs-snapshot-local'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        groovy {
+            srcDir 'src/main/java'
+        }
+        resources {
+            srcDir 'src/resources'
+        }
+    }
+}
