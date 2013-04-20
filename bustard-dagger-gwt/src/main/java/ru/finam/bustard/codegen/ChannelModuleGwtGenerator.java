@@ -1,7 +1,6 @@
 package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
-import ru.finam.bustard.ChannelModule;
 
 import java.io.PrintWriter;
 import java.util.Set;
