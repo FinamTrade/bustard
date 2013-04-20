@@ -11,18 +11,19 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Set;
 
-public class ChannelModuleGenerator {
+public class ChannelModuleGenerator implements ChannelsConsts {
 
     private int counter = 0;
 
     public void generate(Set<String> channelKeys, Writer writer) throws IOException {
-        writer.write(String.format("package %s;\n\n", ChannelModule.class.getPackage().getName()));
+        writer.write(String.format("package %s;\n\n", BUSTARD_PACKAGE_NAME));
         writer.write(String.format("@%s(complete = false)\n", Module.class.getName()));
-        writer.write(String.format("public class %s {\n\n", ChannelModule.class.getSimpleName()));
+        writer.write(String.format("public class %s {\n\n", CHANNEL_MODULE_NAME));
         for (String key : channelKeys) {
-            writeProvideMethod(writer, key, true);
             if (ChannelKey.getTopic(key).isEmpty()) {
                 writeProvideMethod(writer, key, false);
+            } else {
+                writeProvideMethod(writer, key, true);
             }
         }
         writer.write("}");

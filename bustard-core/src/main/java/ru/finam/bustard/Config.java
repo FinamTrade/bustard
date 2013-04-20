@@ -67,16 +67,17 @@ public class Config {
     }
 
     public boolean isEventOnBinding(Class<?> subscriberType, String key) {
-        return eventsOnBinding.get(key) != null &&
-                eventsOnBinding.get(key).contains(subscriberType);
+        Collection<Class<?>> classes = eventsOnBinding.get(key);
+        return classes != null && classes.contains(subscriberType);
     }
 
     public boolean needToSave(String channelKey) {
         return eventsOnBinding.containsKey(channelKey);
     }
 
-    private class SubscriberKey {
-        private final Class subscriber;
+
+    private static class SubscriberKey {
+        private final Class<?> subscriber;
         private final String channelKey;
 
         private SubscriberKey(Class<?> subscriberType, String channelKey) {
@@ -96,7 +97,6 @@ public class Config {
 
             return subscriber == that.subscriber &&
                     channelKey.equals(that.channelKey);
-
         }
 
         @Override

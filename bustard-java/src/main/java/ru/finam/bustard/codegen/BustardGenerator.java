@@ -74,7 +74,7 @@ public class BustardGenerator implements Consts {
 
     public void generate(ProcessingEnvironment environment) throws IOException {
         Set<Element> origin = new HashSet<Element>();
-        BustardEmitter bustardEmitter = new BustardEmitter(PACKAGE_NAME, IMPL_NAME, AbstractJavaBustard.class);
+        BustardEmitter bustardEmitter = new BustardEmitter(BUSTARD_JAVA_PACKAGE_NAME, BUSTARD_IMPL_NAME, AbstractJavaBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
 
         for (MethodDescription description : ListenersFinder.retrieveSubscribeMethods()) {
@@ -123,7 +123,7 @@ public class BustardGenerator implements Consts {
 
         FileObject listenersFileObject = environment.getFiler().createResource(
                 StandardLocation.CLASS_OUTPUT,
-                LISTENERS_PACKAGE_NAME, LISTENERS_FILE_NAME,
+                BUSTARD_PACKAGE_NAME, LISTENERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
         Writer subscribersWriter = listenersFileObject.openWriter();
@@ -136,7 +136,7 @@ public class BustardGenerator implements Consts {
 
         if (!"true".equals(environment.getOptions().get("nobustards"))) {
             JavaFileObject bustardFileObject = environment.getFiler().createSourceFile(
-                    PACKAGE_NAME + "." + IMPL_NAME,
+                    BUSTARD_JAVA_PACKAGE_NAME + "." + BUSTARD_IMPL_NAME,
                     origin.toArray(new Element[origin.size()]));
 
             Writer bustardFileWriter = bustardFileObject.openWriter();

@@ -23,7 +23,9 @@ public class ListenerProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         for (Element elem : roundEnv.getElementsAnnotatedWith(Consumes.class)) {
-            generator.addListener((ExecutableElement) elem);
+            if(elem.getAnnotation(Consumes.class) != null){
+                generator.addListener((ExecutableElement) elem);
+            }
         }
 
         if (roundEnv.processingOver()) {

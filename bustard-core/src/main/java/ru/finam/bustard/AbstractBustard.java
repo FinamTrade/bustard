@@ -25,6 +25,7 @@ public abstract class AbstractBustard implements Bustard {
         this.config = new Config();
     }
 
+    @Override
     public void attachExecutors(Executor... executors) {
         config.attachExecutors(executors);
     }
@@ -51,11 +52,13 @@ public abstract class AbstractBustard implements Bustard {
     @Override
     public void subscribe(Object subscriber) {
         for (String key : config.findEventTypesFor(subscriber.getClass())) {
-            if (config.isEventOnBinding(subscriber.getClass(), key) &&
-                    savedEvents.containsKey(key)) {
-                postToSubscriber(subscriber, key, savedEvents.get(key));
-            }
             subscribers.put(key, subscriber);
+            if (config.isEventOnBinding(subscriber.getClass(), key)) {
+                Object event = savedEvents.get(key);
+                if (event != null) {
+                    postToSubscriber(subscriber, key, event);
+                }
+            }
         }
     }
 
@@ -68,11 +71,7 @@ public abstract class AbstractBustard implements Bustard {
 
     protected Executor getExecutorFor(String key, Class<?> subscriber) {
         Executor executor = config.findExecutorFor(subscriber, key);
-        if (executor == null) {
-            executor = defaultExecutor;
-        }
-
-        return executor;
+        return executor != null ? executor : defaultExecutor;
     }
 
     private <T> void post(String key, T event) {
@@ -87,12 +86,15 @@ public abstract class AbstractBustard implements Bustard {
 
     @Override
     public void post(Object event) {
-        post(ChannelKey.get(event.getClass()), event);
+        String key = ChannelKey.get(event.getClass());
+        post(key, event);
     }
 
     private void postToSubscriber(Object subscriber, String key, Object event) {
-        getExecutorFor(key, subscriber.getClass()).execute(new PostEvent(subscriber, event, key));
+        Executor executor = getExecutorFor(key, subscriber.getClass());
+        executor.execute(new PostEvent(subscriber, event, key));
     }
+
 
     private class PostEvent implements Runnable {
 
