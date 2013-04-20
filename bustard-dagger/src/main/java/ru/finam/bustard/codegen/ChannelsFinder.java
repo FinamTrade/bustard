@@ -1,6 +1,5 @@
 package ru.finam.bustard.codegen;
 
-import ru.finam.bustard.ChannelModule;
 
 import java.io.IOException;
 import java.util.List;

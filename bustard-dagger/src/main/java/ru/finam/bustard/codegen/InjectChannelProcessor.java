@@ -2,7 +2,6 @@ package ru.finam.bustard.codegen;
 
 import ru.finam.bustard.Channel;
 import ru.finam.bustard.ChannelKey;
-import ru.finam.bustard.ChannelModule;
 import ru.finam.bustard.Topic;
 
 import javax.annotation.processing.AbstractProcessor;
