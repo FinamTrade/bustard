@@ -1,6 +1,8 @@
 <module rename-to="test">
     <inherits name="com.google.gwt.user.User"/>
-    <inherits name="ru.finam.bustard.BustardDagger"/>
+    <inherits name="dagger.Dagger"/>
+    <inherits name="ru.finam.bustard.Bustard"/>
+    <!--<inherits name="ru.finam.bustard.ChannelModule"/>-->
 
     <source path=""/>
 

@@ -1,8 +1,8 @@
 package ru.finam.bustard.test;
 
+import dagger.DaggerEntryPoint;
 import dagger.ObjectGraph;
 import ru.finam.bustard.Bustard;
-import ru.finam.bustard.BustardEntryPoint;
 import ru.finam.bustard.Channel;
 import ru.finam.bustard.Topic;
 
@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-public class ChannelHolder extends BustardEntryPoint {
+public class ChannelHolder extends DaggerEntryPoint {
     @Inject
     @Topic("SomeTopic")
     Channel<List<String>> channel1;

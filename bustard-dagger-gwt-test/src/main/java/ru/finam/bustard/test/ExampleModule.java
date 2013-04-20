@@ -5,7 +5,6 @@ import dagger.Module;
 import dagger.Provides;
 import ru.finam.bustard.Bustard;
 import ru.finam.bustard.ChannelModule;
-import ru.finam.bustard.java.BustardImpl;
 
 @Module(
         entryPoints = ChannelHolder.class,

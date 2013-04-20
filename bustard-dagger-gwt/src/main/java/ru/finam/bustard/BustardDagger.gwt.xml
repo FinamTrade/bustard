@@ -1,4 +1,4 @@
-<module>
+ <module>
     <inherits name="com.google.gwt.core.Core"/>
     <inherits name="ru.finam.bustard.Bustard"/>
     <inherits name="dagger.Dagger"/>

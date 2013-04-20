@@ -4,7 +4,6 @@ import dagger.Module;
 import dagger.Provides;
 import ru.finam.bustard.Channel;
 import ru.finam.bustard.ChannelKey;
-import ru.finam.bustard.ChannelModule;
 import ru.finam.bustard.Topic;
 
 import java.io.IOException;
