@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>bustard-dagger-gwt-test</artifactId>
+    <packaging>war</packaging>
     <name>Bustard GWT for Dagger - Integration Test</name>
 
     <dependencies>

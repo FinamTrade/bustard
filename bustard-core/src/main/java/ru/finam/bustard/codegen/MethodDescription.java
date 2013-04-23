@@ -4,6 +4,7 @@ public class MethodDescription {
     private final String listenerName;
     private final String methodName;
     private final String eventName;
+    private final String eventGenericName;
     private String executeQualifierName;
     private final boolean eventOnBinding;
     private final String topic;
@@ -17,7 +18,8 @@ public class MethodDescription {
             String topic) {
         this.listenerName = listenerName;
         this.methodName = methodName;
-        this.eventName = eventName;
+        this.eventGenericName = eventName;
+        this.eventName = removeGeneric(eventName);
         this.executeQualifierName = executeQualifierName;
         this.eventOnBinding = eventOnBinding;
         this.topic = topic;
@@ -53,6 +55,18 @@ public class MethodDescription {
 
     public String getEventName() {
         return eventName;
+    }
+
+    public String getEventGenericName() {
+        return eventGenericName;
+    }
+
+    private static String removeGeneric(String typeName) {
+        int genericIndex = typeName.indexOf("<");
+        if (genericIndex >= 0) {
+            typeName = typeName.substring(0, genericIndex);
+        }
+        return typeName;
     }
 
     public String getExecuteQualifierName() {

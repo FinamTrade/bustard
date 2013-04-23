@@ -1,7 +1,7 @@
 package ru.finam.bustard.test;
 
+import com.google.gwt.user.client.Timer;
 import dagger.DaggerEntryPoint;
-import dagger.ObjectGraph;
 import ru.finam.bustard.Bustard;
 import ru.finam.bustard.Channel;
 import ru.finam.bustard.Topic;
@@ -29,23 +29,30 @@ public class ChannelHolder extends DaggerEntryPoint {
 
     @Override
     protected void onLoad() {
-        ObjectGraph objectGraph = ObjectGraph.create(new ExampleModule());
-        ChannelHolder channelHolder = objectGraph.get(ChannelHolder.class);
-        channelHolder.initialize();
-        channelHolder.channel1.post(Arrays.asList("Foo", "Bar"));
-        channelHolder.channel2.post(Arrays.asList("Abc", "Efg"));
+        initialize();
+        channel1.post(Arrays.asList("Foo", "Bar"));
+        channel2.post(Arrays.asList("Abc", "Efg"));
 
-        send(channelHolder.listener.strings.contains("Abc"));
-        send(channelHolder.listener.strings.contains("Efg"));
-        send(channelHolder.listenerWithTopic.strings.contains("Foo"));
-        send(channelHolder.listenerWithTopic.strings.contains("Bar"));
+        new Timer() {
+            @Override
+            public void run() {
+                check(listener.strings.contains("Abc"), "listener contains \"Abc\"");
+                check(listener.strings.contains("Efg"), "listener contains \"Efg\"");
+                check(listenerWithTopic.strings.contains("Foo"), "listenerWithTopic contains \"Foo\"");
+                check(listenerWithTopic.strings.contains("Bar"));
 
-        send(!channelHolder.listenerWithTopic.strings.contains("Abc"));
-        send(!channelHolder.listener.strings.contains("Foo"));
+                check(!listenerWithTopic.strings.contains("Abc"), "listenerWithTopic not contains \"Abc\"");
+                check(!listener.strings.contains("Foo"));
+            }
+        }.schedule(10);
     }
 
-    public native void send(boolean result) /*-{
-        console.log(result ? "Ok." : "Failed.");
+    public void check(boolean result) {
+        check(result, null);
+    }
+
+    public native void check(boolean result, String message) /*-{
+        console.log((message == null ? "" : (message + ": ")) + (result ? "Ok." : "Failed."));
     }-*/;
 
     public void initialize() {

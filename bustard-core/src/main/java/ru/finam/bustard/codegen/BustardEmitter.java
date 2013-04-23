@@ -34,7 +34,7 @@ public class BustardEmitter {
     }
 
     public void addSubscriber(MethodDescription description) {
-        listeners.put(ChannelKey.get(description.getEventName(), description.getTopic()), description);
+        listeners.put(ChannelKey.get(description.getEventGenericName(), description.getTopic()), description);
     }
 
     private void emitIndent(Writer writer, int level) throws IOException {
@@ -63,7 +63,7 @@ public class BustardEmitter {
             emitIndent(writer, 2);
             writer.write(String.format("config.put(%s.class, %s, %s, %s, %b);\n",
                     description.getListenerName(),
-                    stringLiteral(description.getEventName()),
+                    stringLiteral(description.getEventGenericName()),
                     stringLiteral(description.getTopic()),
                     stringLiteral(description.getExecuteQualifierName()),
                     description.isEventOnBinding()));
@@ -96,7 +96,7 @@ public class BustardEmitter {
                 writer.write(String.format("((%s) subscriber).%s((%s) event);\n",
                         description.getListenerName(),
                         description.getMethodName(),
-                        description.getEventName()));
+                        description.getEventGenericName()));
 
                 emitIndent(writer, 3);
                 writer.write("}\n");

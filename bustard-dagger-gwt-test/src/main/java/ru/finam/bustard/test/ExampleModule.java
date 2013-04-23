@@ -6,6 +6,8 @@ import dagger.Provides;
 import ru.finam.bustard.Bustard;
 import ru.finam.bustard.ChannelModule;
 
+import javax.inject.Singleton;
+
 @Module(
         entryPoints = ChannelHolder.class,
         includes = ChannelModule.class
@@ -13,7 +15,10 @@ import ru.finam.bustard.ChannelModule;
 public class ExampleModule {
 
     @Provides
+    @Singleton
     public Bustard provideBustard() {
-        return GWT.create(Bustard.class);
+        Bustard bustard = GWT.create(Bustard.class);
+        bustard.initialize();
+        return bustard;
     }
 }

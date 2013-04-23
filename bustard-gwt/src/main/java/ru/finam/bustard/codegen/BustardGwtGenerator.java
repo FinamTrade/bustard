@@ -8,15 +8,15 @@ import ru.finam.bustard.gwt.AbstractGwtBustard;
 
 import java.io.PrintWriter;
 
-public class BustardGwtGenerator extends IncrementalGenerator implements Consts {
+public class BustardGwtGenerator extends Generator implements Consts {
 
     private static final String PACKAGE_NAME = "ru.finam.bustard";
     private static final String IMPL_NAME = "BustardGwtImpl";
 
     @Override
-    public RebindResult generateIncrementally(TreeLogger logger,
-                                              GeneratorContext context,
-                                              String typeName) throws UnableToCompleteException {
+    public String generate(TreeLogger logger,
+                           GeneratorContext context,
+                           String typeName) throws UnableToCompleteException {
         PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
         if (writer != null) {
             try {
@@ -44,17 +44,12 @@ public class BustardGwtGenerator extends IncrementalGenerator implements Consts 
             }
             context.commit(logger, writer);
         }
-        return new RebindResult(RebindMode.USE_ALL_NEW_WITH_NO_CACHING, PACKAGE_NAME + "." + IMPL_NAME);
+        return PACKAGE_NAME + "." + IMPL_NAME;
     }
 
     private String extractExecutorName(String executeQualifierName) throws ClassNotFoundException {
         Class<?> qualifierType = AbstractGwtBustard.class.getClassLoader().loadClass(executeQualifierName);
         Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
         return executorType.getCanonicalName();
-    }
-
-    @Override
-    public long getVersionId() {
-        return 0;
     }
 }

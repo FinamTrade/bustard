@@ -6,6 +6,8 @@ import ru.finam.bustard.Bustard;
 import ru.finam.bustard.ChannelModule;
 import ru.finam.bustard.java.BustardImpl;
 
+import javax.inject.Singleton;
+
 @Module(
         entryPoints = ChannelHolder.class,
         includes = ChannelModule.class
@@ -13,7 +15,10 @@ import ru.finam.bustard.java.BustardImpl;
 public class ExampleModule {
 
     @Provides
+    @Singleton
     public Bustard provideBustard() {
-        return new BustardImpl();
+        Bustard bustard = new BustardImpl();
+        bustard.initialize();
+        return bustard;
     }
 }
