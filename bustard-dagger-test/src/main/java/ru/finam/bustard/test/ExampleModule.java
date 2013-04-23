@@ -1,4 +1,4 @@
-package ru.finam.bustard.example;
+package ru.finam.bustard.test;
 
 import dagger.Module;
 import dagger.Provides;

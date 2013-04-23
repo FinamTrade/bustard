@@ -1,4 +1,4 @@
-package ru.finam.bustard.example;
+package ru.finam.bustard.test;
 
 import dagger.ObjectGraph;
 import ru.finam.bustard.Bustard;

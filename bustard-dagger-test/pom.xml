@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bustard-dagger-example</artifactId>
-    <name>Bustard Dagger Example</name>
+    <artifactId>bustard-dagger-test</artifactId>
+    <name>Bustard for Dagger - Integration Test</name>
     <packaging>jar</packaging>
 
     <dependencies>
