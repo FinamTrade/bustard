@@ -16,12 +16,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>ru.finam</groupId>
+            <groupId>ru.finam.bustard</groupId>
             <artifactId>bustard-gwt</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>ru.finam</groupId>
+            <groupId>ru.finam.bustard</groupId>
             <artifactId>bustard-java</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
