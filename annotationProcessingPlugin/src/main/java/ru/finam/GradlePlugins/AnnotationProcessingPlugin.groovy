@@ -2,7 +2,6 @@ package ru.finam.GradlePlugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.Delete
 
 /**
  * User: svanin
@@ -10,16 +9,15 @@ import org.gradle.api.tasks.Delete
  * Time: 18:19
  */
 class AnnotationProcessingPluginExtension {
-    String inputDir = 'src/main/java'
-    String outputBustardDir = 'src/generated/bustard/java'
-    String outputDaggerDir = 'src/generated/dagger/java'
-    String outputDir = 'src/generated/'
     Boolean compileBustardClasses = false
     Boolean compileBustardTestClasses = false
 }
 
 class AnnotationProcessingPlugin implements Plugin<Project> {
 
+    String outputBustardDir = 'src/generated/bustard/java'
+    String outputDaggerDir = 'src/generated/dagger/java'
+    String outputDir = 'src/generated/'
 
     File getDestination(project, destination) {
         project.file(destination)
@@ -41,12 +39,16 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
     }
 
     void _processAnnotations(boolean compileBustardClasses, Project project) {
-        project.delete project.annotationProcessing.outputDir
-        def gen = getDestination(project, project.annotationProcessing.outputBustardDir)
+        project.delete outputDir
+        def gen = getDestination(project, outputBustardDir)
         gen.mkdirs()
+        def gen2 = getDestination(project, outputDaggerDir)
+        gen2.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
-            src(path: getDestination(project, project.annotationProcessing.inputDir))
+            project.sourceSets.main.java.each { File file ->
+                src(path: file.getParent())
+            }
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
@@ -58,11 +60,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             if (!compileBustardClasses) compilerarg(value: '-Anobustards=true')
         }
 
-        def gen2 = getDestination(project, project.annotationProcessing.outputDaggerDir)
-        gen2.mkdirs()
-
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
-            src(path: getDestination(project, project.annotationProcessing.inputDir))
+            project.sourceSets.main.java.each { File file ->
+                src(path: file.getParent())
+            }
             src(path: gen)
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
@@ -72,6 +73,24 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
             compilerarg(value: gen2)
+        }
+
+        project.sourceSets {
+            main {
+                java {
+                    srcDir outputBustardDir
+                    srcDir outputDaggerDir
+                }
+                resources {
+                    srcDir outputBustardDir
+                    include '**/*.bustard'
+                }
+            }
+        }
+
+        [project.compileJava, project.compileTestJava]*.options.collect { options ->
+            options.encoding = 'UTF-8'
+            options.compilerArgs = ['-proc:none']
         }
     }
 }
