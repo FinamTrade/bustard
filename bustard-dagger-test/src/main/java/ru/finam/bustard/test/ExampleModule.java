@@ -4,7 +4,7 @@ import dagger.Module;
 import dagger.Provides;
 import ru.finam.bustard.Bustard;
 import ru.finam.bustard.ChannelModule;
-import ru.finam.bustard.java.BustardImpl;
+import ru.finam.bustard.java.BustardFactory;
 
 import javax.inject.Singleton;
 
@@ -17,7 +17,7 @@ public class ExampleModule {
     @Provides
     @Singleton
     public Bustard provideBustard() {
-        Bustard bustard = new BustardImpl();
+        Bustard bustard = BustardFactory.createBustard();
         bustard.initialize();
         return bustard;
     }

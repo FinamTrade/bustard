@@ -122,7 +122,8 @@ public class BustardGenerator implements Consts {
         }
 
         FileObject listenersFileObject = environment.getFiler().createResource(
-                StandardLocation.CLASS_OUTPUT,
+                // TODO: If you're running integration tests via maven, change to CLASS_OUTPUT, but don't commit or deploy it.
+                StandardLocation.SOURCE_OUTPUT,
                 BUSTARD_PACKAGE_NAME, LISTENERS_FILE_NAME,
                 origin.toArray(new Element[origin.size()]));
 
