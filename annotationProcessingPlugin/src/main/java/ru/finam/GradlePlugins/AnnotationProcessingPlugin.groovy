@@ -2,7 +2,6 @@ package ru.finam.GradlePlugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.JavaPlugin
 
 /**
  * User: svanin
@@ -12,82 +11,47 @@ import org.gradle.api.plugins.JavaPlugin
 class AnnotationProcessingPluginExtension {
     Boolean compileBustardClasses = false
     Boolean compileBustardTestClasses = false
+
+    String outputDirPrefix = 'src/generated/'
+    String outputDirForTestPrefix = 'src/test/generated/'
 }
 
 class AnnotationProcessingPlugin implements Plugin<Project> {
     private project
 
+    private String bustardDir='bustard/java'
+    private String daggerDir='dagger/java'
 
-    String outputBustardDir = 'src/generated/bustard/java'
-    String outputDaggerDir = 'src/generated/dagger/java'
-    String outputDir = 'src/generated/'
-
-    String outputBustardDirForTest = 'src/test/generated/bustard/java'
-    String outputDaggerDirForTest = 'src/test/generated/dagger/java'
-    String outputDirForTest = 'src/test/generated/'
-
-    File getDestination(project, destination) {
-        project.file(destination)
-    }
 
     void apply(Project project) {
-
-        configurePluginConvention()
+        this.project=project
         configureBuildScript()
-
         project.extensions.create("annotationProcessing", AnnotationProcessingPluginExtension)
-
-        /*project.compileJava {
-            doFirst {
-                _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project)
-            }
-        }
-
-        project.compileTestJava {
-            doFirst {
-                _processTestAnnotations(project.annotationProcessing.compileBustardTestClasses, project)
-            }
-        }*/
-    }
-
-    private void configurePluginConvention() {
-//        this.androidAnnotationsConvention = new JavaAnnotationsConvention()
-//        project.convention.plugins.androidannotations = this.androidAnnotationsConvention
     }
 
     private void configureBuildScript() {
-        project.plugins.apply(JavaPlugin.class)
-
-        project.repositories {
-            mavenCentral()
-            maven {
-                url 'https://oss.sonatype.org/content/repositories/snapshots/'
-            }
-        }
-
-        project.configurations {
-            annotationProcessor
-            annotationsProcessor.extendsFrom(compile)
-        }
-
         project.gradle.taskGraph.whenReady { taskGraph ->
             configureDependencies()
-            configurePlugins()
+            configureJavaPlugin()
         }
     }
 
     private void configureDependencies() {
-        project.dependencies {
-//            compile "com.googlecode.androidannotations:androidannotations:${androidAnnotationsConvention.androidAnnotationsVersion}:api"
-//            androidannotations "com.googlecode.androidannotations:androidannotations:${androidAnnotationsConvention.androidAnnotationsVersion}"
+        project.sourceSets {
+            main {
+                java {
+                    srcDir (project.annotationProcessing.outputDirPrefix)
+                }
+                resources {
+                    srcDir (project.annotationProcessing.outputDirPrefix+bustardDir)
+                    include '**/*.bustard'
+                }
+            }
         }
-    }
 
-    private void configurePlugins() {
-        configureJavaPlugin()
-
-        if (project.plugins.hasPlugin('idea')) {
-            configureIdeaPlugin()
+        [project.compileJava, project.compileTestJava]*.options.collect { options ->
+            options.encoding = 'UTF-8'
+            options.compilerArgs = ['-proc:none']
         }
     }
 
@@ -98,44 +62,18 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             }
         }
 
-        project.compileTestJava {
+        /*project.compileTestJava {
             doFirst {
                 _processTestAnnotations(project.annotationProcessing.compileBustardTestClasses, project)
             }
-        }
-    }
-
-    private void configureIdeaPlugin() {
-        project.idea.module {
-            scopes.PROVIDED.plus += project.configurations.androidannotations
-        }
-
-        project.idea.project.ipr.withXml { provider ->
-            def compilerConfiguration = provider.node.component.find {
-                it.@name == 'CompilerConfiguration'
-            }
-
-            def annotationProcessing = compilerConfiguration.annotationProcessing[0]
-            annotationProcessing.@enabled = true
-            annotationProcessing.@useClasspath = true
-            annotationProcessing.appendNode(
-                    'processor', [
-                    name: 'com.googlecode.androidannotations.AndroidAnnotationProcessor',
-                    options: ''
-            ])
-            annotationProcessing.appendNode(
-                    'processModule', [
-                    name: project.name,
-                    generatedDirName: 'gen'
-            ])
-        }
+        }*/
     }
 
     void _processSourceAnnotations(boolean compileBustardClasses, Project project) {
-        project.delete outputDir
-        def gen = getDestination(project, outputBustardDir)
+        project.delete project.annotationProcessing.outputDirPrefix
+        def gen = project.file(project.annotationProcessing.outputDirPrefix+bustardDir)
         gen.mkdirs()
-        def gen2 = getDestination(project, outputDaggerDir)
+        def gen2 = project.file(project.annotationProcessing.outputDirPrefix+daggerDir)
         gen2.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
@@ -167,31 +105,13 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: '-s')
             compilerarg(value: gen2)
         }
-
-        project.sourceSets {
-            main {
-                java {
-                    srcDir outputBustardDir
-                    srcDir outputDaggerDir
-                }
-                resources {
-                    srcDir outputBustardDir
-                    include '**/*.bustard'
-                }
-            }
-        }
-
-        [project.compileJava, project.compileTestJava]*.options.collect { options ->
-            options.encoding = 'UTF-8'
-            options.compilerArgs = ['-proc:none']
-        }
     }
 
     void _processTestAnnotations(boolean compileBustardClasses, Project project) {
-        project.delete outputDirForTest
-        def gen = getDestination(project, outputBustardDirForTest)
+        project.delete project.annotationProcessing.outputDirForTestPrefix
+        def gen = project.file(project.annotationProcessing.outputDaggerDirForTestPrefix+bustardDir)
         gen.mkdirs()
-        def gen2 = getDestination(project, outputDaggerDirForTest)
+        def gen2 = project.file(project.annotationProcessing.outputDaggerDirForTestPrefix+daggerDir)
         gen2.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
@@ -214,10 +134,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         project.sourceSets {
             test {
                 java {
-                    srcDir outputBustardDirForTest
+                    srcDir project.annotationProcessing.outputBustardDirForTest
                 }
                 resources {
-                    srcDir outputBustardDirForTest
+                    srcDir project.annotationProcessing.outputBustardDirForTest
                     include '**/*.bustard'
                 }
             }
@@ -245,11 +165,11 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         project.sourceSets {
             test {
                 java {
-                    srcDir outputBustardDirForTest
-                    srcDir outputDaggerDirForTest
+                    srcDir project.annotationProcessing.outputBustardDirForTest
+                    srcDir project.annotationProcessing.outputDaggerDirForTest
                 }
                 resources {
-                    srcDir outputBustardDirForTest
+                    srcDir project.annotationProcessing.outputBustardDirForTest
                     include '**/*.bustard'
                 }
             }
