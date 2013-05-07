@@ -10,7 +10,7 @@ import org.gradle.api.Project
  */
 class AnnotationProcessingPluginExtension {
     Boolean compileBustardClasses = false
-    Boolean compileBustardTestClasses = false
+    Boolean compileBustardTestClasses = true
 
     String outputDirPrefix = 'src/generated/'
     String outputDirForTestPrefix = 'src/test/generated/'
@@ -117,7 +117,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         }
     }
 
-    void _processTestAnnotations(boolean compileBustardClasses, Project project) {
+    void _processTestAnnotations(boolean compileBustardTestClasses, Project project) {
         project.delete project.annotationProcessing.outputDirForTestPrefix
         def gen = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
         gen.mkdirs()
@@ -139,7 +139,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
             compilerarg(value: gen)
-            if (!compileBustardClasses) compilerarg(value: '-Anobustards=true')
+            if (!compileBustardTestClasses) compilerarg(value: '-Anobustards=true')
         }
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
