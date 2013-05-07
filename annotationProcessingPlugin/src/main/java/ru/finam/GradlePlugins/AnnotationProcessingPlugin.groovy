@@ -40,7 +40,8 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         project.sourceSets {
             main {
                 java {
-                    srcDir(project.annotationProcessing.outputDirPrefix)
+                    srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
+                    srcDir(project.annotationProcessing.outputDirPrefix + daggerDir)
                 }
                 resources {
                     srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
