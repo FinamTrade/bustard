@@ -131,6 +131,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.main.output.addToAntBuilder(ant, 'classpath')
+            project.sourceSets.test.output.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
             compilerarg(value: "-processor")
