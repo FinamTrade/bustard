@@ -81,10 +81,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     void _processSourceAnnotations(boolean compileBustardClasses, Project project) {
         project.delete project.annotationProcessing.outputDirPrefix
-        def gen = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
-        gen.mkdirs()
-        def gen2 = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
-        gen2.mkdirs()
+        def outputBustardDir = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
+        outputBustardDir.mkdirs()
+        def outputDaggerDir = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
+        outputDaggerDir.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
             project.sourceSets.main.java.each { File file ->
@@ -97,7 +97,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'ru.finam.bustard.codegen.ListenerProcessor,ru.finam.bustard.codegen.InjectChannelProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: gen)
+            compilerarg(value: outputBustardDir)
             if (!compileBustardClasses) compilerarg(value: '-Anobustards=true')
         }
 
@@ -105,7 +105,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.main.java.each { File file ->
                 src(path: file.getParent())
             }
-            src(path: gen)
+            src(path: outputBustardDir)
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
@@ -113,16 +113,16 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'dagger.internal.codegen.InjectProcessor,dagger.internal.codegen.ProvidesProcessor,dagger.internal.codegen.FullGraphProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: gen2)
+            compilerarg(value: outputDaggerDir)
         }
     }
 
     void _processTestAnnotations(boolean compileBustardTestClasses, Project project) {
         project.delete project.annotationProcessing.outputDirForTestPrefix
-        def gen = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
-        gen.mkdirs()
-        def gen2 = project.file(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
-        gen2.mkdirs()
+        def outputBustardDir = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
+        outputBustardDir.mkdirs()
+        def outputDaggerDir = project.file(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
+        outputDaggerDir.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
             project.sourceSets.test.java.each { File file ->
@@ -138,7 +138,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'ru.finam.bustard.codegen.ListenerProcessor,ru.finam.bustard.codegen.InjectChannelProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: gen)
+            compilerarg(value: outputBustardDir)
             if (!compileBustardTestClasses) compilerarg(value: '-Anobustards=true')
         }
 
@@ -146,7 +146,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.test.java.each { File file ->
                 src(path: file.getParent())
             }
-            src(path: gen)
+            src(path: outputBustardDir)
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.main.output.addToAntBuilder(ant, 'classpath')
@@ -157,7 +157,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'dagger.internal.codegen.InjectProcessor,dagger.internal.codegen.ProvidesProcessor,dagger.internal.codegen.FullGraphProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: gen2)
+            compilerarg(value: outputDaggerDir)
         }
     }
 }
