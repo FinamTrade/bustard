@@ -16,7 +16,7 @@ public class ChannelModuleGenerator implements ChannelsConsts {
 
     public void generate(Set<String> channelKeys, Writer writer) throws IOException {
         writer.write(String.format("package %s;\n\n", BUSTARD_PACKAGE_NAME));
-        writer.write(String.format("@%s(complete = false)\n", Module.class.getName()));
+        writer.write(String.format("@%s(complete = false, library = true)\n", Module.class.getName()));
         writer.write(String.format("public class %s {\n\n", CHANNEL_MODULE_NAME));
         for (String key : channelKeys) {
             if (ChannelKey.getTopic(key).isEmpty()) {

@@ -9,7 +9,7 @@ import ru.finam.bustard.java.BustardFactory;
 import javax.inject.Singleton;
 
 @Module(
-        entryPoints = ChannelHolder.class,
+        injects = ChannelHolder.class,
         includes = ChannelModule.class
 )
 public class ExampleModule {
