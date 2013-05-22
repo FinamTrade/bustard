@@ -21,6 +21,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     private String bustardDir = 'bustard/java'
     private String daggerDir = 'dagger/java'
+    def outputBustardDir
+    def outputDaggerDir
+    def outputBustardTestDir
+    def outputDaggerTestDir
 
 
     void apply(Project project) {
@@ -31,8 +35,8 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     private void configureBuildScript() {
         project.gradle.taskGraph.whenReady { taskGraph ->
-            configureDependencies()
             configureJavaPlugin()
+            configureDependencies()
         }
     }
 
@@ -40,8 +44,8 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         project.sourceSets {
             main {
                 java {
-                    srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
-                    srcDir(project.annotationProcessing.outputDirPrefix + daggerDir)
+//                    srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
+//                    srcDir(project.annotationProcessing.outputDirPrefix + daggerDir)
                 }
                 resources {
                     srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
@@ -54,7 +58,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                     srcDir(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
                 }
                 resources {
-                    srcDir (project.annotationProcessing.outputDirForTestPrefix + bustardDir)
+                    srcDir(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
                     include '**/*.bustard'
                 }
             }
@@ -82,9 +86,9 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     void _processSourceAnnotations(boolean compileBustardClasses, Project project) {
         project.delete project.annotationProcessing.outputDirPrefix
-        def outputBustardDir = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
+        outputBustardDir = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
         outputBustardDir.mkdirs()
-        def outputDaggerDir = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
+        outputDaggerDir = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
         outputDaggerDir.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
@@ -120,13 +124,16 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     void _processTestAnnotations(boolean compileBustardTestClasses, Project project) {
         project.delete project.annotationProcessing.outputDirForTestPrefix
-        def outputBustardDir = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
-        outputBustardDir.mkdirs()
-        def outputDaggerDir = project.file(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
-        outputDaggerDir.mkdirs()
+        outputBustardTestDir = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
+        outputBustardTestDir.mkdirs()
+        outputDaggerTestDir = project.file(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
+        outputDaggerTestDir.mkdirs()
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
             project.sourceSets.test.java.each { File file ->
+                src(path: file.getParent())
+            }
+            project.sourceSets.main.java.each { File file ->
                 src(path: file.getParent())
             }
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
@@ -139,7 +146,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'ru.finam.bustard.codegen.ListenerProcessor,ru.finam.bustard.codegen.InjectChannelProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: outputBustardDir)
+            compilerarg(value: outputBustardTestDir)
             if (!compileBustardTestClasses) compilerarg(value: '-Anobustards=true')
         }
 
@@ -147,7 +154,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.test.java.each { File file ->
                 src(path: file.getParent())
             }
-            src(path: outputBustardDir)
+            project.sourceSets.main.java.each { File file ->
+                src(path: file.getParent())
+            }
+            src(path: outputBustardTestDir)
             project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.compileClasspath.addToAntBuilder(ant, 'classpath')
             project.sourceSets.main.output.addToAntBuilder(ant, 'classpath')
@@ -158,7 +168,15 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: 'dagger.internal.codegen.InjectProcessor,dagger.internal.codegen.ProvidesProcessor,dagger.internal.codegen.FullGraphProcessor')
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
-            compilerarg(value: outputDaggerDir)
+            compilerarg(value: outputDaggerTestDir)
+        }
+        project.sourceSets {
+            main {
+                java {
+                    srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
+                    srcDir(project.annotationProcessing.outputDirPrefix + daggerDir)
+                }
+            }
         }
     }
 }
