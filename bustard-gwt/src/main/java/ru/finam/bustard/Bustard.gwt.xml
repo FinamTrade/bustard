@@ -1,4 +1,4 @@
-<module rename-to="bustard">
+<module>
     <inherits name="com.google.gwt.core.Core" />
     <inherits name="com.google.gwt.user.DOM" />
     <inherits name="com.google.common.collect.Collect"/>
