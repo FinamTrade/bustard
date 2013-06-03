@@ -12,6 +12,8 @@ public abstract class AbstractBustard implements Bustard {
     private final Multimap<String, Object> subscribers;
     private final Map<String, Object> savedEvents;
 
+    private ErrorListener errorListener;
+
     public AbstractBustard(Executor defaultExecutor,
                            Multimap<String, Object> subscribersMap,
                            Map<String, Object> eventsMap) {
@@ -28,6 +30,10 @@ public abstract class AbstractBustard implements Bustard {
     @Override
     public void attachExecutors(Executor... executors) {
         config.attachExecutors(executors);
+    }
+
+    public void setErrorListener(ErrorListener errorListener) {
+        this.errorListener = errorListener;
     }
 
     @Override
@@ -112,9 +118,9 @@ public abstract class AbstractBustard implements Bustard {
         public void run() {
             try {
                 post(subscriber, event, key);
-            } catch (Throwable throwable) {
-                if (!(event instanceof Throwable)) {
-                    post(throwable);
+            } catch (Throwable error) {
+                if (errorListener != null) {
+                    errorListener.handle(error);
                 }
             }
         }
