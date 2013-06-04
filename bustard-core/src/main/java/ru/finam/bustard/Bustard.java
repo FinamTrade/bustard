@@ -7,4 +7,5 @@ public interface Bustard {
     void subscribe(Object subscriber);
     void unsubscribe(Object subscriber);
     void post(Object event);
+    void setErrorListener(ErrorListener errorListener);
 }

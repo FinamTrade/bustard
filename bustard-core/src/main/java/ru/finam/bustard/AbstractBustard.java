@@ -32,6 +32,7 @@ public abstract class AbstractBustard implements Bustard {
         config.attachExecutors(executors);
     }
 
+    @Override
     public void setErrorListener(ErrorListener errorListener) {
         this.errorListener = errorListener;
     }
