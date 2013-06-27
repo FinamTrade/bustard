@@ -41,9 +41,12 @@ public class InjectChannelProcessor extends AbstractProcessor implements Channel
         }
         if (roundEnv.processingOver()) {
             try {
+                String randString = Long.toHexString(Double.doubleToLongBits(Math.random()));
+                String listenersFilename = CHANNELS_FILE_BASE_NAME + "-" + randString + "." + BUSTARD_FILE_EXTENSION;
+
                 FileObject channelsFileObject = processingEnv.getFiler().createResource(
                         StandardLocation.SOURCE_OUTPUT,
-                        BUSTARD_PACKAGE_NAME, CHANNELS_FILE_NAME,
+                        BUSTARD_PACKAGE_NAME, listenersFilename,
                         originTypes.toArray(new Element[originTypes.size()]));
 
                 Writer channelsWriter = channelsFileObject.openWriter();

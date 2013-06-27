@@ -5,16 +5,16 @@ import ru.finam.bustard.Bustard;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ListenersFinder implements Consts {
 
-    public static final String FILE_PATH = BUSTARD_PACKAGE_NAME.replace('.', '/') +
-            "/" + LISTENERS_FILE_NAME;
+    public static final String FILE_PATH = BUSTARD_PACKAGE_NAME.replace('.', '/');
 
     public static List<MethodDescription> retrieveSubscribeMethods() throws IOException {
+        ArrayList<String> listenerFileNames = ClasspathFileRetriever.retrieveFileNames(Pattern.compile(".*listeners.*bustard"), FILE_PATH);
         List<String> lines =
-                FileLinesParser.retrieveResource(Bustard.class.getClassLoader(), FILE_PATH);
-
+                FileLinesParser.retrieveResources(Bustard.class.getClassLoader(), listenerFileNames);
         List<MethodDescription> result = new ArrayList<MethodDescription>();
         for (String line : lines) {
             result.add(parseLine(line));

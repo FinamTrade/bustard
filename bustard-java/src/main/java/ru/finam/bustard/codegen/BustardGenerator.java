@@ -56,7 +56,7 @@ public class BustardGenerator implements Consts {
 
     public TypeElement getExecuteQualifier(ExecutableElement listenerMethod) {
         TypeElement executeQualifierType = null;
-        for(AnnotationMirror methodAnnotation : listenerMethod.getAnnotationMirrors()) {
+        for (AnnotationMirror methodAnnotation : listenerMethod.getAnnotationMirrors()) {
             TypeElement annotationType = (TypeElement) methodAnnotation.getAnnotationType().asElement();
             TypeMirror type = extractExecutorType(annotationType);
             if (type == null) {
@@ -121,10 +121,13 @@ public class BustardGenerator implements Consts {
             origin.add(mirrorToElement(eventType));
         }
 
+        String randString = Long.toHexString(Double.doubleToLongBits(Math.random()));
+        String listenersFilename = LISTENERS_FILE_BASE_NAME + "-" + randString + "." + BUSTARD_FILE_EXTENSION;
+
         FileObject listenersFileObject = environment.getFiler().createResource(
                 // TODO: If you're running integration tests via maven, change to CLASS_OUTPUT, but don't commit or deploy it.
                 StandardLocation.SOURCE_OUTPUT,
-                BUSTARD_PACKAGE_NAME, LISTENERS_FILE_NAME,
+                BUSTARD_PACKAGE_NAME, listenersFilename,
                 origin.toArray(new Element[origin.size()]));
 
         Writer subscribersWriter = listenersFileObject.openWriter();

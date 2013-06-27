@@ -2,12 +2,15 @@ package ru.finam.GradlePlugins
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.ProjectDependency
+import groovy.io.FileType
 
 /**
  * User: svanin
  * Date: 11.04.13
  * Time: 18:19
  */
+
 class AnnotationProcessingPluginExtension {
     Boolean compileBustardClasses = false
     Boolean compileBustardTestClasses = true
@@ -18,9 +21,11 @@ class AnnotationProcessingPluginExtension {
 
 class AnnotationProcessingPlugin implements Plugin<Project> {
     private project
-
     private String bustardDir = 'bustard/java'
     private String daggerDir = 'dagger/java'
+    private boolean isAndroidMain
+    private boolean isAndroidLib
+    def mainSrc
     def outputBustardDir
     def outputDaggerDir
     def outputBustardTestDir
@@ -28,25 +33,30 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     void apply(Project project) {
         this.project = project
+        isAndroidMain = project.getPlugins().hasPlugin('android')
+        isAndroidLib = project.getPlugins().hasPlugin('android-library')
+        project.extensions.create("annotationProcessing", AnnotationProcessingPluginExtension)
+        if (isAndroidMain || isAndroidLib) {
+            configureAndroidSources()
+        }
         project.gradle.taskGraph.whenReady { taskGraph ->
             configureBuildScript()
         }
-        project.extensions.create("annotationProcessing", AnnotationProcessingPluginExtension)
     }
 
-    private void configureBuildScript() {
-        project.compileJava {
-            doFirst {
-                _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project)
+    private void configureAndroidSources() {
+        project.annotationProcessing.outputDirPrefix = 'generated/'    //TODO: move this to buildscript somehow
+        project.android.sourceSets {
+            main {
+                java {
+                    srcDir(project.annotationProcessing.outputDirPrefix + bustardDir)
+                    srcDir(project.annotationProcessing.outputDirPrefix + daggerDir)
+                }
             }
         }
+    }
 
-        project.compileTestJava {
-            doFirst {
-                _processTestAnnotations(project.annotationProcessing.compileBustardTestClasses, project)
-            }
-        }
-
+    private void configureJavaSources() {
         project.sourceSets {
             main {
                 java {
@@ -69,25 +79,96 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                 }
             }
         }
+    }
 
-        [project.compileJava, project.compileTestJava]*.options.collect { options ->
-            options.encoding = 'UTF-8'
-            options.compilerArgs = ['-proc:none']
+    private void configureBuildScript() {
+        if (isAndroidMain || isAndroidLib) {
+            mainSrc = project.android.sourceSets.main
+            if (isAndroidMain) {
+                def compileTasks = project.android.applicationVariants.collect { it.javaCompile.name }
+                def allTasks = project.gradle.getTaskGraph().getAllTasks().collect { it.name }
+                def activeCompileTasks = allTasks.intersect(compileTasks)
+
+                activeCompileTasks.each {
+                    project.getTasksByName(it, false).each {
+                        it.doFirst {
+                            _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, (it.name.contains('FT') ? 'FinamTrade' : 'WhoTrades'))
+                        }
+                        [project[it.name]]*.options.collect { options ->
+                            options.encoding = 'UTF-8'
+                            options.compilerArgs = ['-proc:none']
+                        }
+                    }
+                }
+            } else {
+                _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "")
+                [project.compileRelease]*.options.collect { options ->
+                    options.encoding = 'UTF-8'
+                    options.compilerArgs = ['-proc:none']
+                }
+            }
+        } else {
+            mainSrc = project.sourceSets.main
+            project.compileJava {
+                doFirst {
+                    _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "")
+                }
+            }
+            project.compileTestJava {
+                doFirst {
+                    _processTestAnnotations(project.annotationProcessing.compileBustardTestClasses, project)
+                }
+            }
+
+            configureJavaSources()
+
+            [project.compileJava, project.compileTestJava]*.options.collect { options ->
+                options.encoding = 'UTF-8'
+                options.compilerArgs = ['-proc:none']
+            }
         }
     }
 
-    void _processSourceAnnotations(boolean compileBustardClasses, Project project) {
+    void _processSourceAnnotations(boolean compileBustardClasses, Project project, flavorPath) {
         project.delete project.annotationProcessing.outputDirPrefix
         outputBustardDir = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
-        outputBustardDir.mkdirs()
         outputDaggerDir = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
+        outputBustardDir.mkdirs()
         outputDaggerDir.mkdirs()
 
+        def cp = []
+        if (isAndroidMain || isAndroidLib) {
+            cp += project.file('build/source')
+        }
+        if (isAndroidMain) {
+            cp += project.file(flavorPath + '/src')
+        }
+        //traversing android libraries because android library artifacts are AARs
+        ['compile', 'provided'].each { configuration ->
+            project.configurations[configuration].dependencies.
+                    findAll { Object o -> o instanceof ProjectDependency }.
+                    each { ProjectDependency dependency ->
+                        def plugins = dependency.dependencyProject.getPlugins()
+                        if (plugins.hasPlugin('android-library')) {
+                            //TODO: refactor to get compiled classes instead sources
+                            cp.addAll(dependency.dependencyProject.android.sourceSets.main.java.srcDirs)
+                        }
+                    }
+        }
+        cp = cp.findAll { File f ->
+            f.exists()
+        }
+
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
-            project.sourceSets.main.java.srcDirs.each { File file ->
+            cp.each {
+                src(path: it)
+            }
+            mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
+            ['compile', 'provided'].each { configuration ->
+                project.configurations[configuration].addToAntBuilder(ant, 'classpath')
+            }
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
             compilerarg(value: "-processor")
@@ -95,15 +176,21 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             compilerarg(value: '-proc:only')
             compilerarg(value: '-s')
             compilerarg(value: outputBustardDir)
+            compilerarg(value: '-Apath=' + ((File) outputBustardDir).absolutePath)
             if (!compileBustardClasses) compilerarg(value: '-Anobustards=true')
         }
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
-            project.sourceSets.main.java.srcDirs.each { File file ->
+            src(path: outputBustardDir)
+            cp.each {
+                src(path: it)
+            }
+            mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            src(path: outputBustardDir)
-            project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
+            ['compile', 'provided'].each { configuration ->
+                project.configurations[configuration].addToAntBuilder(ant, 'classpath')
+            }
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
             compilerarg(value: "-processor")
@@ -116,6 +203,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
     void _processTestAnnotations(boolean compileBustardTestClasses, Project project) {
         project.delete project.annotationProcessing.outputDirForTestPrefix
+
         outputBustardTestDir = project.file(project.annotationProcessing.outputDirForTestPrefix + bustardDir)
         outputBustardTestDir.mkdirs()
         outputDaggerTestDir = project.file(project.annotationProcessing.outputDirForTestPrefix + daggerDir)
@@ -125,14 +213,14 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.test.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            project.sourceSets.main.java.srcDirs.each { File file ->
+            mainSrc.java.srcDirs.each { File file ->
                 if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) && (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir))) {
                     src(path: file)
                 }
             }
-            project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
+            project.configurations.compile.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.compileClasspath.addToAntBuilder(ant, 'classpath')
-            project.sourceSets.main.output.addToAntBuilder(ant, 'classpath')
+            mainSrc.output.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.output.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
@@ -149,15 +237,15 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             project.sourceSets.test.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            project.sourceSets.main.java.srcDirs.each { File file ->
+            mainSrc.java.srcDirs.each { File file ->
                 if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) && (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir))) {
                     src(path: file)
                 }
             }
             src(path: outputBustardTestDir)
-            project.sourceSets.main.compileClasspath.addToAntBuilder(ant, 'classpath')
+            project.configurations.compile.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.compileClasspath.addToAntBuilder(ant, 'classpath')
-            project.sourceSets.main.output.addToAntBuilder(ant, 'classpath')
+            mainSrc.output.addToAntBuilder(ant, 'classpath')
             project.sourceSets.test.allJava.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')

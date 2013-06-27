@@ -25,4 +25,20 @@ public class FileLinesParser {
         return result;
     }
 
+    public static List<String> retrieveResources(ClassLoader loader, ArrayList<String> filePaths) throws IOException {
+        List<String> result = new ArrayList<String>();
+        for (String filePath : filePaths) {
+            try {
+                Iterator<URL> urls = Iterators.forEnumeration(loader.getResources(filePath));
+                while (urls.hasNext()) {
+                    URL url = urls.next();
+                    result.addAll(Resources.readLines(url, Charsets.UTF_8));
+                }
+            } catch (FileNotFoundException e) {
+                //ignore exception silently and return empty list
+            }
+        }
+        return result;
+    }
+
 }
