@@ -5,7 +5,7 @@ import ru.finam.bustard.Consumes;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GenericListener {
+public class GenericListener extends BaseListener {
 
     List<String> strings = new ArrayList<String>();
 

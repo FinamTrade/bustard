@@ -19,6 +19,9 @@ public class ChannelHolder extends DaggerEntryPoint {
     Channel<List<String>> channel2;
 
     @Inject
+    Channel<String> baseChannel;
+
+    @Inject
     Bustard bustard;
 
     private GenericListener listener = new GenericListener();
@@ -32,6 +35,7 @@ public class ChannelHolder extends DaggerEntryPoint {
         initialize();
         channel1.post(Arrays.asList("Foo", "Bar"));
         channel2.post(Arrays.asList("Abc", "Efg"));
+        baseChannel.post("Test");
 
         new Timer() {
             @Override
@@ -43,6 +47,7 @@ public class ChannelHolder extends DaggerEntryPoint {
 
                 check(!listenerWithTopic.strings.contains("Abc"), "listenerWithTopic not contains \"Abc\"");
                 check(!listener.strings.contains("Foo"));
+                check(listener.baseStrings.contains("Test"), "Consumes in base class");
             }
         }.schedule(10);
     }

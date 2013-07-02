@@ -59,7 +59,12 @@ public class Config {
     }
 
     public Collection<String> findEventTypesFor(Class<?> subscriberType) {
-        return eventTypes.get(subscriberType);
+        Collection<String> result = new ArrayList<String>();
+        while(subscriberType != Object.class) {
+            result.addAll(eventTypes.get(subscriberType));
+            subscriberType = subscriberType.getSuperclass();
+        }
+        return result;
     }
 
     public Executor findExecutorFor(Class<?> subscriberType, String channelKey) {
