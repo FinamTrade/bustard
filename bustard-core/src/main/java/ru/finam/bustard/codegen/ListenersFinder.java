@@ -1,7 +1,5 @@
 package ru.finam.bustard.codegen;
 
-import ru.finam.bustard.Bustard;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +12,7 @@ public class ListenersFinder implements Consts {
     public static List<MethodDescription> retrieveSubscribeMethods() throws IOException {
         ArrayList<String> listenerFileNames = ClasspathFileRetriever.retrieveFileNames(Pattern.compile(".*listeners.*bustard"), FILE_PATH);
         List<String> lines =
-                FileLinesParser.retrieveResources(Bustard.class.getClassLoader(), listenerFileNames);
+                FileLinesParser.retrieveResources(listenerFileNames);
         List<MethodDescription> result = new ArrayList<MethodDescription>();
         for (String line : lines) {
             result.add(parseLine(line));
