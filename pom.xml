@@ -11,8 +11,8 @@
         <module>bustard-core</module>
         <module>bustard-java</module>
         <module>bustard-gwt</module>
-        <module>example</module>
         <module>bustard-dagger</module>
+        <module>example</module>
         <module>bustard-dagger-test</module>
         <module>bustard-dagger-gwt-test</module>
     </modules>
