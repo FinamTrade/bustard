@@ -4,6 +4,10 @@ import ru.finam.bustard.Bustard;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.Exception;
+import java.net.JarURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,22 +18,40 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 /**
- * Created with IntelliJ IDEA.
  * User: drevis
  * Date: 26.06.13
- * Time: 16:48
- * To change this template use File | Settings | File Templates.
  */
 public class ClasspathFileRetriever {
+
+    private static String getFilePath(URL url) throws URISyntaxException {
+        URI uri = url.toURI();
+        File file = new File(uri);
+        return file.getPath();
+    }
 
     public static ArrayList<String> retrieveFileNames(Pattern pattern, String baseFilePath) throws IOException {
         Enumeration<URL> en = Bustard.class.getClassLoader().getResources(baseFilePath);
         ArrayList<String> listenerFiles = new ArrayList<String>();
 
         while (en.hasMoreElements()) {
-            String filePath = en.nextElement().getFile().substring(6); //delete 'file:'
-            filePath = filePath.substring(0, filePath.length() - baseFilePath.length() - 2); //left path to the jar or directory
-            listenerFiles.addAll(ResourceList.getResources(filePath, pattern));
+            URL url = en.nextElement();
+            String path;
+            try {
+                path = getFilePath(url);
+            } catch (Exception e) {
+                if ("jar".equals(url.getProtocol())) {
+                    JarURLConnection connection = (JarURLConnection) url.openConnection();
+                    URL jarUrl = connection.getJarFileURL();
+                    try {
+                        path = getFilePath(jarUrl);
+                    } catch (URISyntaxException ex) {
+                        throw new IOException("cannot handle url " + url, ex);
+                    }
+                } else {
+                    path = url.getFile();
+                }
+            }
+            listenerFiles.addAll(ResourceList.getResources(path, pattern));
         }
         return listenerFiles;
     }
