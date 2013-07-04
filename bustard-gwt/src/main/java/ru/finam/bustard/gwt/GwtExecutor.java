@@ -1,17 +1,18 @@
 package ru.finam.bustard.gwt;
 
-import com.google.gwt.user.client.Timer;
 import ru.finam.bustard.Executor;
 
 public class GwtExecutor implements Executor {
 
     @Override
     public void execute(final Runnable runnable) {
-        new Timer() {
-            @Override
-            public void run() {
-                runnable.run();
-            }
-        }.schedule(0);
+        setTimeout(runnable, 0);
     }
+
+    //TODO elemental-gwt Timer should be used instead but currently it has bugs
+    private static native void setTimeout(final Runnable runnable, final int timeout) /*-{
+        $wnd.setTimeout($entry(function() {
+            runnable.@java.lang.Runnable::run()();
+        }), 0);
+    }-*/;
 }
