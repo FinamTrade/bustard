@@ -1,20 +1,17 @@
 package ru.finam.bustard.codegen;
 
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
 public class ListenersFinder implements Consts {
-
     public static final String FILE_PATH = BUSTARD_PACKAGE_NAME.replace('.', '/');
 
     public static List<MethodDescription> retrieveSubscribeMethods() throws IOException {
-        ArrayList<String> listenerFileNames = ClasspathFileRetriever.retrieveFileNames(Pattern.compile(".*listeners.*bustard"), FILE_PATH);
-        List<String> lines =
-                FileLinesParser.retrieveResources(listenerFileNames);
-        List<MethodDescription> result = new ArrayList<MethodDescription>();
-        for (String line : lines) {
+        List<MethodDescription> result = Lists.newArrayList();
+        for (String line : ClasspathFileRetriever.retrieveLines(Pattern.compile(".*listeners.*bustard"), FILE_PATH)) {
             result.add(parseLine(line));
         }
         return result;
