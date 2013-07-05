@@ -144,7 +144,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             cp += project.file(flavorPath + '/src')
         }
         //traversing android libraries because android library artifacts are AARs
-        ['compile', 'provided'].each { configuration ->
+        ['compile', 'providedsdk'].each { configuration ->
             project.configurations[configuration].dependencies.
                     findAll { Object o -> o instanceof ProjectDependency }.
                     each { ProjectDependency dependency ->
@@ -166,7 +166,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            ['compile', 'provided'].each { configuration ->
+            ['compile', 'providedsdk'].each { configuration ->
                 project.configurations[configuration].addToAntBuilder(ant, 'classpath')
             }
             compilerarg(value: '-source')
@@ -188,7 +188,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            ['compile', 'provided'].each { configuration ->
+            ['compile', 'providedsdk'].each { configuration ->
                 project.configurations[configuration].addToAntBuilder(ant, 'classpath')
             }
             compilerarg(value: '-source')
