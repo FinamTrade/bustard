@@ -24,7 +24,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
     private String bustardDir = 'bustard/java'
     private String daggerDir = 'dagger/java'
     private boolean isAndroidMain
-    private boolean isAndroidLib
+    private boolean isAndroid
     def mainSrc
     def outputBustardDir
     def outputDaggerDir
@@ -34,9 +34,9 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
     void apply(Project project) {
         this.project = project
         isAndroidMain = project.getPlugins().hasPlugin('android')
-        isAndroidLib = project.getPlugins().hasPlugin('android-library')
+        isAndroid = isAndroidMain || project.getPlugins().hasPlugin('android-library')
         project.extensions.create("annotationProcessing", AnnotationProcessingPluginExtension)
-        if (isAndroidMain || isAndroidLib) {
+        if (isAndroid) {
             configureAndroidSources()
         }
         project.gradle.taskGraph.whenReady { taskGraph ->
@@ -82,7 +82,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
     }
 
     private void configureBuildScript() {
-        if (isAndroidMain || isAndroidLib) {
+        if (isAndroid) {
             mainSrc = project.android.sourceSets.main
             if (isAndroidMain) {
                 def compileTasks = project.android.applicationVariants.collect { it.javaCompile.name }
@@ -92,7 +92,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                 activeCompileTasks.each {
                     project.getTasksByName(it, false).each {
                         it.doFirst {
-                            _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, (it.name.contains('FT') ? 'FinamTrade' : 'WhoTrades'))
+                            _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, (it.name.contains('FT') ? 'FinamTrade' : 'WhoTrades'), it.classpath)
                         }
                         [project[it.name]]*.options.collect { options ->
                             options.encoding = 'UTF-8'
@@ -101,7 +101,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                     }
                 }
             } else {
-                _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "")
+                _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "", project.compileRelease.classpath)
                 [project.compileRelease]*.options.collect { options ->
                     options.encoding = 'UTF-8'
                     options.compilerArgs = ['-proc:none']
@@ -111,7 +111,7 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             mainSrc = project.sourceSets.main
             project.compileJava {
                 doFirst {
-                    _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "")
+                    _processSourceAnnotations(project.annotationProcessing.compileBustardClasses, project, "", it.classpath)
                 }
             }
             project.compileTestJava {
@@ -129,7 +129,11 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         }
     }
 
-    void _processSourceAnnotations(boolean compileBustardClasses, Project project, flavorPath) {
+    private def getAndroidPlugin() {
+        return project.getPlugins().findPlugin(isAndroidMain ? 'android' : 'android-library')
+    }
+
+    void _processSourceAnnotations(boolean compileBustardClasses, Project project, flavorPath, classpath) {
         project.delete project.annotationProcessing.outputDirPrefix
         outputBustardDir = project.file(project.annotationProcessing.outputDirPrefix + bustardDir)
         outputDaggerDir = project.file(project.annotationProcessing.outputDirPrefix + daggerDir)
@@ -137,23 +141,11 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         outputDaggerDir.mkdirs()
 
         def cp = []
-        if (isAndroidMain || isAndroidLib) {
-            cp += project.file('build/source')
+        if (isAndroid) {
+            cp += project.file('build/source') //adding R files
         }
         if (isAndroidMain) {
-            cp += project.file(flavorPath + '/src')
-        }
-        //traversing android libraries because android library artifacts are AARs
-        ['compile', 'providedsdk'].each { configuration ->
-            project.configurations[configuration].dependencies.
-                    findAll { Object o -> o instanceof ProjectDependency }.
-                    each { ProjectDependency dependency ->
-                        def plugins = dependency.dependencyProject.getPlugins()
-                        if (plugins.hasPlugin('android-library')) {
-                            //TODO: refactor to get compiled classes instead sources
-                            cp.addAll(dependency.dependencyProject.android.sourceSets.main.java.srcDirs)
-                        }
-                    }
+            cp += project.file(flavorPath + '/src') //adding flavor sources
         }
         cp = cp.findAll { File f ->
             f.exists()
@@ -166,9 +158,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            ['compile', 'providedsdk'].each { configuration ->
-                project.configurations[configuration].addToAntBuilder(ant, 'classpath')
+            if (isAndroid) {
+                project.files(getAndroidPlugin().getRuntimeJarList()).addToAntBuilder(ant, 'classpath')
             }
+            classpath.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
             compilerarg(value: "-processor")
@@ -188,9 +181,10 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
             mainSrc.java.srcDirs.each { File file ->
                 src(path: file)
             }
-            ['compile', 'providedsdk'].each { configuration ->
-                project.configurations[configuration].addToAntBuilder(ant, 'classpath')
+            if (isAndroid) {
+                project.files(getAndroidPlugin().getRuntimeJarList()).addToAntBuilder(ant, 'classpath')
             }
+            classpath.addToAntBuilder(ant, 'classpath')
             compilerarg(value: '-source')
             compilerarg(value: '1.6')
             compilerarg(value: "-processor")

@@ -2,6 +2,7 @@ package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
+import org.apache.commons.io.FilenameUtils;
 import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;
@@ -18,6 +19,10 @@ public class BustardGwtGenerator extends Generator implements Consts {
                            GeneratorContext context,
                            String typeName) throws UnableToCompleteException {
         PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
+
+        FilenameUtils.getExtension();
+
+
         if (writer != null) {
             try {
                 TypeOracle typeOracle = context.getTypeOracle();
