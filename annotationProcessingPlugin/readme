@@ -8,17 +8,13 @@ buildscript {
         }
     }
     dependencies {
-        classpath group: 'ru.finam.GradlePlugins', name: 'AnnotationProcessingPlugin', version: '1.0-SNAPSHOT'
+        classpath group: 'ru.finam.GradlePlugins', name: 'AnnotationProcessingPlugin', version: 'текушая версия'
     }
 }
 
 apply plugin: 'annotationProcessing'
 
 annotationProcessing{
-    inputDir='src/main/java'
-    outputBustardDir='src/generated/bustard/java'
-    outputDaggerDir='src/generated/dagger/java'
-    outputDir='src/generated/'
     compileBustardClasses = false
     compileBustardTestClasses = true
 }

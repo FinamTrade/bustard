@@ -15,7 +15,7 @@ class AnnotationProcessingPluginExtension {
     Boolean compileBustardClasses = false
     Boolean compileBustardTestClasses = true
 
-    String outputDirPrefix = 'src/generated/'
+    String outputDirPrefix = 'src/main/generated/'
     String outputDirForTestPrefix = 'src/test/generated/'
 }
 
