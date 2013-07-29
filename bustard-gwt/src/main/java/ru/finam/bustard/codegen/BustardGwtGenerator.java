@@ -20,9 +20,6 @@ public class BustardGwtGenerator extends Generator implements Consts {
                            String typeName) throws UnableToCompleteException {
         PrintWriter writer = context.tryCreate(logger, PACKAGE_NAME, IMPL_NAME);
 
-        FilenameUtils.getExtension();
-
-
         if (writer != null) {
             try {
                 TypeOracle typeOracle = context.getTypeOracle();
