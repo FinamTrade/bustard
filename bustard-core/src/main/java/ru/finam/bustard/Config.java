@@ -68,7 +68,13 @@ public class Config {
     }
 
     public Executor findExecutorFor(Class<?> subscriberType, String channelKey) {
-        return executors.get(new SubscriberKey(subscriberType, channelKey));
+        Class<?> type = subscriberType;
+        Executor executor = null;
+        while (executor == null && type != Object.class) {
+            executor = executors.get(new SubscriberKey(type, channelKey));
+            type = type.getSuperclass();
+        }
+        return executor;
     }
 
     public boolean isEventOnBinding(Class<?> subscriberType, String key) {
