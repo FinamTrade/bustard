@@ -13,6 +13,6 @@ public class GwtExecutor implements Executor {
     private static native void setTimeout(final Runnable runnable, final int timeout) /*-{
         $wnd.setTimeout($entry(function() {
             runnable.@java.lang.Runnable::run()();
-        }), 0);
+        }), timeout);
     }-*/;
 }
