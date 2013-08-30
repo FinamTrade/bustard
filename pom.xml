@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.finam.bustard</groupId>
     <artifactId>bustard-parent</artifactId>
-    <version>1.1.5-SNAPSHOT</version>
+    <version>1.1.6</version>
     <name>Bustard (Parent)</name>
     <packaging>pom</packaging>
 
@@ -13,8 +13,6 @@
         <module>bustard-gwt</module>
         <module>bustard-dagger</module>
         <module>example</module>
-        <module>bustard-dagger-test</module>
-        <module>bustard-dagger-gwt-test</module>
     </modules>
 
     <properties>
@@ -27,6 +25,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -63,22 +62,22 @@
 
     <repositories>
         <repository>
-            <id>artifactory-snapshot-repo</id>
-            <url>http://msk-projects2:81/artifactory/libs-snapshot-local</url>
+            <id>artifactory-release-repo</id>
+            <url>http://msk-projects2:81/artifactory/libs-release-local</url>
             <snapshots>
-                <enabled>true</enabled>
+                <enabled>false</enabled>
             </snapshots>
             <releases>
-                <enabled>false</enabled>
+                <enabled>true</enabled>
             </releases>
         </repository>
     </repositories>
     <distributionManagement>
-        <snapshotRepository>
+        <repository>
             <id>MSK-PROJECTS2</id>
-            <name>MSK-PROJECTS2-snapshots</name>
-            <url>http://msk-projects2:81/artifactory/libs-snapshot-local</url>
-        </snapshotRepository>
+            <name>MSK-PROJECTS2-release</name>
+            <url>http://msk-projects2:81/artifactory/libs-release-local</url>
+        </repository>
     </distributionManagement>
 
 </project>

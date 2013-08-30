@@ -1,6 +1,7 @@
 package ru.finam.bustard;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
 import java.util.Map;
@@ -86,7 +87,7 @@ public abstract class AbstractBustard implements Bustard {
             savedEvents.put(key, event);
         }
 
-        for (Object subscriber : subscribers.get(key)) {
+        for (Object subscriber : ImmutableList.copyOf(subscribers.get(key))) {
             postToSubscriber(subscriber, key, event);
         }
     }
