@@ -4,7 +4,6 @@ import com.google.common.base.Supplier;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 import ru.finam.bustard.AbstractBustard;
-import ru.finam.bustard.ChannelKey;
 import ru.finam.bustard.DirectExecutor;
 
 import java.util.Collection;

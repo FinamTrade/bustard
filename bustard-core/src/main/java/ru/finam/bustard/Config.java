@@ -78,8 +78,16 @@ public class Config {
     }
 
     public boolean isEventOnBinding(Class<?> subscriberType, String key) {
-        Collection<Class<?>> classes = eventsOnBinding.get(key);
-        return classes != null && classes.contains(subscriberType);
+        Collection<Class<?>> subscriberTypes = eventsOnBinding.get(key);
+        if (subscriberTypes == null) {
+            return false;
+        }
+        for(Class<?> type : subscriberTypes) {
+            if (isAssignable(type, subscriberType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean needToSave(String channelKey) {
