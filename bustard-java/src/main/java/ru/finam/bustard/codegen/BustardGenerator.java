@@ -72,7 +72,7 @@ public class BustardGenerator implements Consts {
         return executeQualifierType;
     }
 
-    public void generate(ProcessingEnvironment environment) throws IOException {
+    public void generate(ProcessingEnvironment environment) throws IOException, GeneratorException {
         Set<Element> origin = new HashSet<Element>();
         BustardEmitter bustardEmitter = new BustardEmitter(BUSTARD_JAVA_PACKAGE_NAME, BUSTARD_IMPL_NAME, AbstractJavaBustard.class);
         StringBuilder subscribersInfo = new StringBuilder();
@@ -100,6 +100,12 @@ public class BustardGenerator implements Consts {
                 String eventName = eventType.toString();
                 String methodName = listenerMethod.getSimpleName().toString();
                 String executeQualifierName = null;
+
+                if (eventName.contains(" extends ") || eventName.contains(" super ")) {
+                    throw new GeneratorException("Event generic types with 'extends' or 'super' keywords restricted.\n" +
+                            "Found in class: " + listenerType + ", method: " + listenerMethod.getSimpleName() +  "(" +
+                            eventName + ").");
+                }
 
                 Consumes consumesAnnotation = listenerMethod.getAnnotation(Consumes.class);
                 boolean eventOnBinding = consumesAnnotation.eventOnBinding();

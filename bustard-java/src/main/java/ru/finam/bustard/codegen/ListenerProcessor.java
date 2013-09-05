@@ -31,7 +31,7 @@ public class ListenerProcessor extends AbstractProcessor {
         if (roundEnv.processingOver()) {
             try {
                 generator.generate(processingEnv);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR,
                         "Generate processing failed: " + e.toString());
             }
