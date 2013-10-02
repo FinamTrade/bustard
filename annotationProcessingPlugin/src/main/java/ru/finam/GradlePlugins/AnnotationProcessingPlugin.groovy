@@ -156,7 +156,9 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                 src(path: it)
             }
             mainSrc.java.srcDirs.each { File file ->
-                src(path: file)
+                if (file.exists()) {
+                    src(path: file)
+                }
             }
             if (isAndroid) {
                 project.files(getAndroidPlugin().getRuntimeJarList()).addToAntBuilder(ant, 'classpath')
@@ -179,7 +181,9 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
                 src(path: it)
             }
             mainSrc.java.srcDirs.each { File file ->
-                src(path: file)
+                if (file.exists()) {
+                    src(path: file)
+                }
             }
             if (isAndroid) {
                 project.files(getAndroidPlugin().getRuntimeJarList()).addToAntBuilder(ant, 'classpath')
@@ -205,10 +209,14 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
 
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
             project.sourceSets.test.java.srcDirs.each { File file ->
-                src(path: file)
+                if (file.exists()) {
+                    src(path: file)
+                }
             }
             mainSrc.java.srcDirs.each { File file ->
-                if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) && (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir))) {
+                if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) &&
+                        (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir)) &&
+                        (file.exists())) {
                     src(path: file)
                 }
             }
@@ -229,10 +237,14 @@ class AnnotationProcessingPlugin implements Plugin<Project> {
         println '_processTestAnnotations-dagger'
         project.ant.javac(includeantruntime: false, encoding: 'UTF-8') {
             project.sourceSets.test.java.srcDirs.each { File file ->
-                src(path: file)
+                if (file.exists()) {
+                    src(path: file)
+                }
             }
             mainSrc.java.srcDirs.each { File file ->
-                if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) && (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir))) {
+                if (file != project.file(project.annotationProcessing.outputDirPrefix + daggerDir) &&
+                        (file != project.file(project.annotationProcessing.outputDirPrefix + bustardDir)) &&
+                        (file.exists())) {
                     src(path: file)
                 }
             }
