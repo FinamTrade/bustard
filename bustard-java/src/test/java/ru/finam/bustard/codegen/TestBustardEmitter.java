@@ -40,6 +40,7 @@ public class TestBustardEmitter {
                 "            if (subscriber instanceof Subscriber) {\n" +
                 "                ((Subscriber) subscriber).listen((SomeEvent) event);\n" +
                 "            }\n" +
+                "            return;\n" +
                 "        }\n" +
                 "    }\n" +
                 "\n" +

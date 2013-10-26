@@ -12,15 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BustardEmitter {
+    private static final String INDENT = "    ";
 
     private final String implName;
     private final String pkgName;
     private final Class<? extends Bustard> supertype;
-    private static final String INDENT = "    ";
 
-    private Multimap<String, MethodDescription> listeners = HashMultimap.create();
-
-    private Map<String, String> executors = new HashMap<String, String>();
+    private final Multimap<String, MethodDescription> listeners = HashMultimap.create();
+    private final Map<String, String> executors = new HashMap<String, String>();
 
     public BustardEmitter(String pkgName, String implSimpleName,
                           Class<? extends Bustard> supertype) {
@@ -35,12 +34,6 @@ public class BustardEmitter {
 
     public void addSubscriber(MethodDescription description) {
         listeners.put(ChannelKey.get(description.getEventGenericName(), description.getTopic()), description);
-    }
-
-    private void emitIndent(Writer writer, int level) throws IOException {
-        for (int i = 0; i < level; i++) {
-            writer.write(INDENT);
-        }
     }
 
     public void emit(Writer writer) throws IOException {
@@ -75,20 +68,20 @@ public class BustardEmitter {
         writer.write("@Override\n");
         emitIndent(writer, 1);
         writer.write("protected void post(Object subscriber, Object event, String key) throws Throwable {\n");
-        boolean first = true;
         for (String key : listeners.keySet()) {
             Collection<MethodDescription> descriptions = listeners.get(key);
 
-            if (first) {
-                first = false;
-                emitIndent(writer, 2);
-            } else {
-                writer.write(" else ");
-            }
+            emitIndent(writer, 2);
             writer.write(String.format("if (\"%s\".equals(key)) {\n", key));
 
+            boolean subscriberFirst = true;
             for (MethodDescription description : descriptions) {
-                emitIndent(writer, 3);
+                if (subscriberFirst) {
+                    subscriberFirst = false;
+                    emitIndent(writer, 3);
+                } else {
+                    writer.write(" else ");
+                }
                 writer.write(String.format("if (subscriber instanceof %s) {\n",
                         description.getListenerName()));
 
@@ -99,20 +92,29 @@ public class BustardEmitter {
                         description.getEventGenericName()));
 
                 emitIndent(writer, 3);
-                writer.write("}\n");
+                writer.write("}");
             }
+            writer.write("\n");
+
+            emitIndent(writer, 3);
+            writer.write("return;\n");
 
             emitIndent(writer, 2);
-            writer.write("}");
+            writer.write("}\n");
         }
-        writer.write("\n");
         emitIndent(writer, 1);
         writer.write("}\n\n");
 
         writer.write("}");
     }
 
-    private String stringLiteral(String value) {
+    private static void emitIndent(Writer writer, int level) throws IOException {
+        for (int i = 0; i < level; i++) {
+            writer.write(INDENT);
+        }
+    }
+
+    private static String stringLiteral(String value) {
         return value == null ? String.valueOf((Object) null) : String.format("\"%s\"", value);
     }
 }

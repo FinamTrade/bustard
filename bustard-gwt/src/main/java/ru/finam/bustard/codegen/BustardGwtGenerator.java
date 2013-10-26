@@ -2,7 +2,6 @@ package ru.finam.bustard.codegen;
 
 import com.google.gwt.core.ext.*;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
-import org.apache.commons.io.FilenameUtils;
 import ru.finam.bustard.ExecuteQualifier;
 import ru.finam.bustard.Executor;
 import ru.finam.bustard.gwt.AbstractGwtBustard;
@@ -49,7 +48,7 @@ public class BustardGwtGenerator extends Generator implements Consts {
         return PACKAGE_NAME + "." + IMPL_NAME;
     }
 
-    private String extractExecutorName(String executeQualifierName) throws ClassNotFoundException {
+    private static String extractExecutorName(String executeQualifierName) throws ClassNotFoundException {
         Class<?> qualifierType = AbstractGwtBustard.class.getClassLoader().loadClass(executeQualifierName);
         Class<? extends Executor> executorType = qualifierType.getAnnotation(ExecuteQualifier.class).value();
         return executorType.getCanonicalName();
