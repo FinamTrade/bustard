@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
 
+import java.util.Collection;
 import java.util.Map;
 
 public abstract class AbstractBustard implements Bustard {
@@ -87,7 +88,11 @@ public abstract class AbstractBustard implements Bustard {
             savedEvents.put(key, event);
         }
 
-        for (Object subscriber : ImmutableList.copyOf(subscribers.get(key))) {
+        Collection<Object> eventSubscribers;
+        synchronized (subscribers) {
+            eventSubscribers = ImmutableList.copyOf(subscribers.get(key));
+        }
+        for (Object subscriber : eventSubscribers) {
             postToSubscriber(subscriber, key, event);
         }
     }

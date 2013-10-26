@@ -5,7 +5,7 @@
     <parent>
         <artifactId>bustard-parent</artifactId>
         <groupId>ru.finam.bustard</groupId>
-        <version>1.1.10</version>
+        <version>1.1.12</version>
     </parent>
     <name>Bustard for Dagger (Parent)</name>
     <modelVersion>4.0.0</modelVersion>
